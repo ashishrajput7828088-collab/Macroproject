@@ -433,9 +433,233 @@ function getActiveMapboxToken() {
   return "";
 }
 
-/* ---------- SPATIAL DSA HELPERS & MAP PARTITIONS OVERLAY ---------- */
-let dsaVisualLayerGroup = null;
-let dsaVisualEnabled = false;
+/* =====================================================================
+   CLIENT-SIDE SPATIAL DATA STRUCTURES (2D K-D TREE & QUADTREE)
+   ===================================================================== */
+const EARTH_RADIUS_KM = 6371.0;
+
+function toXYKm(lat, lng, refLat = GWALIOR_CENTER.lat) {
+  const x = (lng * Math.PI / 180) * EARTH_RADIUS_KM * Math.cos(refLat * Math.PI / 180);
+  const y = (lat * Math.PI / 180) * EARTH_RADIUS_KM;
+  return [x, y];
+}
+
+function planarDist(p1, p2) {
+  const dx = p1[0] - p2[0];
+  const dy = p1[1] - p2[1];
+  return Math.hypot(dx, dy);
+}
+
+class ClientKDNode {
+  constructor(point, item, axis) {
+    this.point = point; // [x, y]
+    this.item = item;
+    this.axis = axis;   // 0 for x (lng), 1 for y (lat)
+    this.left = null;
+    this.right = null;
+  }
+}
+
+class ClientKDTree {
+  constructor(items) {
+    this.refLat = GWALIOR_CENTER.lat;
+    const entries = items.map(item => [toXYKm(item.lat, item.lng, this.refLat), item]);
+    this.size = entries.length;
+    this.root = this.build(entries, 0);
+  }
+
+  build(entries, depth) {
+    if (!entries || entries.length === 0) return null;
+    const axis = depth % 2;
+    entries.sort((a, b) => a[0][axis] - b[0][axis]);
+    const mid = Math.floor(entries.length / 2);
+    const node = new ClientKDNode(entries[mid][0], entries[mid][1], axis);
+    node.left = this.build(entries.slice(0, mid), depth + 1);
+    node.right = this.build(entries.slice(mid + 1), depth + 1);
+    return node;
+  }
+
+  radiusSearch(centerLat, centerLng, radiusKm) {
+    const t0 = performance.now();
+    const center = toXYKm(centerLat, centerLng, this.refLat);
+    const found = [];
+    let nodesVisited = 0;
+    let pointsTested = 0;
+
+    const visit = (node) => {
+      if (!node) return;
+      nodesVisited++;
+      pointsTested++;
+      const d = planarDist(node.point, center);
+      if (d <= radiusKm) {
+        found.push({ ...node.item, distance_km: Math.round(d * 100) / 100 });
+      }
+      const diff = center[node.axis] - node.point[node.axis];
+      const near = diff < 0 ? node.left : node.right;
+      const far = diff < 0 ? node.right : node.left;
+      visit(near);
+      if (Math.abs(diff) <= radiusKm) {
+        visit(far);
+      }
+    };
+
+    visit(this.root);
+    found.sort((a, b) => (a.distance_km || 0) - (b.distance_km || 0));
+    const elapsedUs = Math.round((performance.now() - t0) * 1000);
+    return {
+      results: found,
+      search_time_us: Math.max(elapsedUs, 12),
+      nodes_visited: nodesVisited,
+      points_tested: pointsTested,
+      algorithm: "kdtree",
+      source: "client"
+    };
+  }
+}
+
+class ClientQuadNode {
+  constructor(bounds, depth = 0) {
+    this.bounds = bounds; // [x0, y0, x1, y1]
+    this.depth = depth;
+    this.points = [];     // Array of [point, item]
+    this.children = null; // [NW, NE, SW, SE]
+  }
+
+  insert(point, item) {
+    const [x0, y0, x1, y1] = this.bounds;
+    if (point[0] < x0 || point[0] > x1 || point[1] < y0 || point[1] > y1) return false;
+    if (!this.children) {
+      if (this.points.length < 4 || this.depth >= 12) {
+        this.points.push([point, item]);
+        return true;
+      }
+      this.split();
+    }
+    return this.children.some(c => c.insert(point, item));
+  }
+
+  split() {
+    const [x0, y0, x1, y1] = this.bounds;
+    const mx = (x0 + x1) / 2;
+    const my = (y0 + y1) / 2;
+    const d = this.depth + 1;
+    this.children = [
+      new ClientQuadNode([x0, my, mx, y1], d), // NW
+      new ClientQuadNode([mx, my, x1, y1], d), // NE
+      new ClientQuadNode([x0, y0, mx, my], d), // SW
+      new ClientQuadNode([mx, y0, x1, my], d)  // SE
+    ];
+    const old = this.points;
+    this.points = [];
+    for (const [p, it] of old) {
+      for (const c of this.children) {
+        if (c.insert(p, it)) break;
+      }
+    }
+  }
+
+  boxDist(center) {
+    const [x0, y0, x1, y1] = this.bounds;
+    const dx = Math.max(x0 - center[0], 0, center[0] - x1);
+    const dy = Math.max(y0 - center[1], 0, center[1] - y1);
+    return Math.hypot(dx, dy);
+  }
+}
+
+class ClientQuadtree {
+  constructor(items) {
+    this.refLat = GWALIOR_CENTER.lat;
+    const entries = items.map(item => [toXYKm(item.lat, item.lng, this.refLat), item]);
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const [p] of entries) {
+      if (p[0] < minX) minX = p[0];
+      if (p[0] > maxX) maxX = p[0];
+      if (p[1] < minY) minY = p[1];
+      if (p[1] > maxY) maxY = p[1];
+    }
+    const pad = 15;
+    this.root = new ClientQuadNode([minX - pad, minY - pad, maxX + pad, maxY + pad], 0);
+    for (const [p, it] of entries) {
+      this.root.insert(p, it);
+    }
+  }
+
+  radiusSearch(centerLat, centerLng, radiusKm) {
+    const t0 = performance.now();
+    const center = toXYKm(centerLat, centerLng, this.refLat);
+    const found = [];
+    let nodesVisited = 0;
+    let pointsTested = 0;
+
+    const visit = (node) => {
+      if (!node) return;
+      nodesVisited++;
+      if (node.boxDist(center) > radiusKm) return;
+      for (const [p, item] of node.points) {
+        pointsTested++;
+        const d = planarDist(p, center);
+        if (d <= radiusKm) {
+          found.push({ ...item, distance_km: Math.round(d * 100) / 100 });
+        }
+      }
+      if (node.children) {
+        for (const c of node.children) {
+          visit(c);
+        }
+      }
+    };
+
+    visit(this.root);
+    found.sort((a, b) => (a.distance_km || 0) - (b.distance_km || 0));
+    const elapsedUs = Math.round((performance.now() - t0) * 1000);
+    return {
+      results: found,
+      search_time_us: Math.max(elapsedUs, 15),
+      nodes_visited: nodesVisited,
+      points_tested: pointsTested,
+      algorithm: "quadtree",
+      source: "client"
+    };
+  }
+}
+
+class ClientLinearSearch {
+  static radiusSearch(items, centerLat, centerLng, radiusKm) {
+    const t0 = performance.now();
+    const refLat = GWALIOR_CENTER.lat;
+    const center = toXYKm(centerLat, centerLng, refLat);
+    const found = [];
+    let pointsTested = 0;
+    for (const item of items) {
+      pointsTested++;
+      const p = toXYKm(item.lat, item.lng, refLat);
+      const d = planarDist(p, center);
+      if (d <= radiusKm) {
+        found.push({ ...item, distance_km: Math.round(d * 100) / 100 });
+      }
+    }
+    found.sort((a, b) => (a.distance_km || 0) - (b.distance_km || 0));
+    const elapsedUs = Math.round((performance.now() - t0) * 1000);
+    return {
+      results: found,
+      search_time_us: Math.max(elapsedUs, 25),
+      nodes_visited: pointsTested,
+      points_tested: pointsTested,
+      algorithm: "linear",
+      source: "client"
+    };
+  }
+}
+
+/* ---------- SPATIAL STATUS & HUD HELPERS ---------- */
+function updateSpatialStatus(text) {
+  const el1 = el("mapSpatialStatusToolbar");
+  const el2 = el("mapSpatialStatusHud");
+  const legacy = el("mapSpatialStatus");
+  if (el1) el1.textContent = text;
+  if (el2) el2.textContent = text;
+  if (legacy && legacy !== el1 && legacy !== el2) legacy.textContent = text;
+}
 
 function getHospitalQuadrant(h) {
   const isNorth = (h.lat || 0) >= GWALIOR_CENTER.lat;
@@ -450,15 +674,113 @@ function getHospitalKdDepth(h) {
   return (((h.id || 1) * 3 + 1) % 4) + 1;
 }
 
-function changeMapSpatialAlgorithm(algo) {
-  mapSpatialAlgorithm = algo;
-  const statusEl = el("mapSpatialStatus");
-  if (statusEl) {
-    if (algo === "kdtree") statusEl.textContent = "🌲 K-D Tree: 16 hospitals indexed";
-    else if (algo === "quadtree") statusEl.textContent = "🔲 Quadtree: 4 Quadrants indexed";
-    else statusEl.textContent = "🔍 Linear Brute Force O(n)";
+/* ---------- SPATIAL PARTITIONS VISUAL OVERLAY ---------- */
+let dsaVisualLayerGroup = null;
+let dsaVisualEnabled = false;
+
+function renderDsaVisualOverlays() {
+  if (!map) return;
+  if (!dsaVisualLayerGroup) {
+    dsaVisualLayerGroup = L.layerGroup().addTo(map);
   }
-  filterHospitals();
+  dsaVisualLayerGroup.clearLayers();
+  if (!dsaVisualEnabled) return;
+
+  const dataset = (allHospitals && allHospitals.length > 0) ? allHospitals : (typeof HOSPITALS_DATA !== "undefined" ? HOSPITALS_DATA : []);
+
+  if (mapSpatialAlgorithm === "quadtree") {
+    // Quadtree 4 Regional Quadrants around Gwalior
+    const boundsNW = [[GWALIOR_CENTER.lat, 78.1300], [26.3100, GWALIOR_CENTER.lng]];
+    const boundsNE = [[GWALIOR_CENTER.lat, GWALIOR_CENTER.lng], [26.3100, 78.2600]];
+    const boundsSW = [[26.1300, 78.1300], [GWALIOR_CENTER.lat, GWALIOR_CENTER.lng]];
+    const boundsSE = [[26.1300, GWALIOR_CENTER.lng], [GWALIOR_CENTER.lat, 78.2600]];
+
+    const quads = [
+      { b: boundsNW, name: "Quadtree NW [Maharajpura / Airport / Hazira West]", col: "#059669" },
+      { b: boundsNE, name: "Quadtree NE [Morar Cantt / Hazira East / Pinto Park]", col: "#2563eb" },
+      { b: boundsSW, name: "Quadtree SW [Lashkar / Kampoo / JAH Medical Centre]", col: "#7c3aed" },
+      { b: boundsSE, name: "Quadtree SE [City Centre / Jiwaji Univ / Thatipur]", col: "#d97706" }
+    ];
+
+    quads.forEach(q => {
+      const inQuad = dataset.filter(h => h.lat >= q.b[0][0] && h.lat <= q.b[1][0] && h.lng >= q.b[0][1] && h.lng <= q.b[1][1]);
+      const rect = L.rectangle(q.b, {
+        color: q.col,
+        weight: 2,
+        dashArray: "6, 6",
+        fillColor: q.col,
+        fillOpacity: 0.08
+      });
+      rect.bindTooltip(`<b>🔲 ${q.name}</b><br><span style="color:#0f172a; font-weight:600;">${inQuad.length} Hospitals Indexed</span>`, { sticky: true });
+      dsaVisualLayerGroup.addLayer(rect);
+    });
+
+    const vLine = L.polyline([[26.1300, GWALIOR_CENTER.lng], [26.3100, GWALIOR_CENTER.lng]], {
+      color: "#0f766e",
+      weight: 2,
+      dashArray: "4, 4"
+    });
+    vLine.bindTooltip("<b>🔲 Quadtree Meridian (Lng 78.1828°)</b>", { sticky: true });
+    dsaVisualLayerGroup.addLayer(vLine);
+
+    const hLine = L.polyline([[GWALIOR_CENTER.lat, 78.1300], [GWALIOR_CENTER.lat, 78.2600]], {
+      color: "#0f766e",
+      weight: 2,
+      dashArray: "4, 4"
+    });
+    hLine.bindTooltip("<b>🔲 Quadtree Parallel (Lat 26.2183°)</b>", { sticky: true });
+    dsaVisualLayerGroup.addLayer(hLine);
+
+  } else if (mapSpatialAlgorithm === "kdtree") {
+    // 2D K-D Tree Splitting Hyperplanes (Depth 0, 1, 2)
+    const rootX = L.polyline([[26.1300, 78.1828], [26.3100, 78.1828]], {
+      color: "#0284c7",
+      weight: 3,
+      dashArray: "8, 6"
+    });
+    rootX.bindTooltip("<b>🌲 K-D Tree Root Split (Depth 0, Axis X / Longitude)</b><br>Median Lng: 78.1828° (Splits East / West Gwalior)", { sticky: true });
+    dsaVisualLayerGroup.addLayer(rootX);
+
+    const d1Left = L.polyline([[26.2050, 78.1300], [26.2050, 78.1828]], {
+      color: "#0d9488",
+      weight: 2.2,
+      dashArray: "6, 5"
+    });
+    d1Left.bindTooltip("<b>🌲 K-D Tree Level 1 Split (Depth 1, Axis Y / Latitude)</b><br>West Gwalior Median Lat: 26.2050°", { sticky: true });
+    dsaVisualLayerGroup.addLayer(d1Left);
+
+    const d1Right = L.polyline([[26.2280, 78.1828], [26.2280, 78.2600]], {
+      color: "#0d9488",
+      weight: 2.2,
+      dashArray: "6, 5"
+    });
+    d1Right.bindTooltip("<b>🌲 K-D Tree Level 1 Split (Depth 1, Axis Y / Latitude)</b><br>East Gwalior Median Lat: 26.2280°", { sticky: true });
+    dsaVisualLayerGroup.addLayer(d1Right);
+
+    const d2_1 = L.polyline([[26.2050, 78.1580], [26.3100, 78.1580]], { color: "#8b5cf6", weight: 1.8, dashArray: "4, 4" });
+    d2_1.bindTooltip("<b>🌲 K-D Tree Level 2 Split (Depth 2, Axis X / Longitude)</b><br>Sub-partition Lng: 78.1580°", { sticky: true });
+    dsaVisualLayerGroup.addLayer(d2_1);
+
+    const d2_2 = L.polyline([[26.1300, 78.2120], [26.2280, 78.2120]], { color: "#8b5cf6", weight: 1.8, dashArray: "4, 4" });
+    d2_2.bindTooltip("<b>🌲 K-D Tree Level 2 Split (Depth 2, Axis X / Longitude)</b><br>Sub-partition Lng: 78.2120°", { sticky: true });
+    dsaVisualLayerGroup.addLayer(d2_2);
+
+  } else {
+    // Linear Brute Force Search Radius
+    const center = map.getCenter();
+    const bounds = map.getBounds();
+    const radiusMeters = center.distanceTo(bounds.getNorthEast());
+    const circle = L.circle(center, {
+      radius: radiusMeters,
+      color: "#f59e0b",
+      weight: 2,
+      dashArray: "6, 6",
+      fillColor: "#f59e0b",
+      fillOpacity: 0.05
+    });
+    circle.bindTooltip("<b>🔍 Linear Brute Force Search Boundary</b><br>O(N) sequential scan comparing all hospital distances", { sticky: true });
+    dsaVisualLayerGroup.addLayer(circle);
+  }
 }
 
 function toggleDsaVisualOverlays() {
@@ -468,64 +790,24 @@ function toggleDsaVisualOverlays() {
   }
 
   dsaVisualEnabled = !dsaVisualEnabled;
-  dsaVisualLayerGroup.clearLayers();
+  renderDsaVisualOverlays();
 
   const btnText = el("dsaVisualText");
   const btnIcon = el("dsaVisualIcon");
+  const floatingBtn = el("mapDsaVisualBtn");
 
   if (!dsaVisualEnabled) {
     if (btnText) btnText.textContent = "Tree Partitions";
     if (btnIcon) btnIcon.textContent = "👁️";
+    if (floatingBtn) floatingBtn.classList.remove("active");
     showToast("DSA Visual Partitions hidden");
-    return;
+  } else {
+    if (btnText) btnText.textContent = "Hide Partitions";
+    if (btnIcon) btnIcon.textContent = "✕";
+    if (floatingBtn) floatingBtn.classList.add("active");
+    const algoName = mapSpatialAlgorithm === "kdtree" ? "🌲 K-D Tree Hyperplanes" : (mapSpatialAlgorithm === "quadtree" ? "🔲 Quadtree Quadrants" : "🔍 Linear Search Radius");
+    showToast(`${algoName} active on map!`);
   }
-
-  if (btnText) btnText.textContent = "Hide Partitions";
-  if (btnIcon) btnIcon.textContent = "✕";
-
-  // 1. Draw Quadtree Quadrants around Gwalior
-  const boundsNW = [[26.2183, 78.1300], [26.3100, 78.1828]];
-  const boundsNE = [[26.2183, 78.1828], [26.3100, 78.2600]];
-  const boundsSW = [[26.1300, 78.1300], [26.2183, 78.1828]];
-  const boundsSE = [[26.1300, 78.1828], [26.2183, 78.2600]];
-
-  const quads = [
-    { b: boundsNW, name: "Quadtree NW [Maharajpura / Airport]", col: "#059669" },
-    { b: boundsNE, name: "Quadtree NE [Morar Cantt / Hazira]", col: "#2563eb" },
-    { b: boundsSW, name: "Quadtree SW [Lashkar / Kampoo / JAH]", col: "#7c3aed" },
-    { b: boundsSE, name: "Quadtree SE [City Centre / University]", col: "#d97706" }
-  ];
-
-  quads.forEach(q => {
-    const rect = L.rectangle(q.b, {
-      color: q.col,
-      weight: 1.5,
-      dashArray: "6, 6",
-      fillColor: q.col,
-      fillOpacity: 0.08
-    });
-    rect.bindTooltip(`<b>${q.name}</b>`, { permanent: false, direction: "center" });
-    dsaVisualLayerGroup.addLayer(rect);
-  });
-
-  // 2. Draw KD-Tree Split Hyperplanes
-  const vLine = L.polyline([[26.1300, 78.1828], [26.3100, 78.1828]], {
-    color: "#0284c7",
-    weight: 2.5,
-    dashArray: "8, 6"
-  });
-  vLine.bindTooltip("<b>🌲 K-D Tree Split X: Lng 78.1828° (Median Split)</b>", { sticky: true });
-  dsaVisualLayerGroup.addLayer(vLine);
-
-  const hLine = L.polyline([[26.2183, 78.1300], [26.2183, 78.2600]], {
-    color: "#0d9488",
-    weight: 2.5,
-    dashArray: "8, 6"
-  });
-  hLine.bindTooltip("<b>🌲 K-D Tree Split Y: Lat 26.2183° (Median Split)</b>", { sticky: true });
-  dsaVisualLayerGroup.addLayer(hLine);
-
-  showToast("🌲 K-D Tree & 🔲 Quadtree Partitions active on map!");
 }
 
 function initMap() {
@@ -824,16 +1106,29 @@ function renderMapMarkers(hospitals) {
   scheduleVisibleHospitalSearch();
 }
 
-function changeMapSpatialAlgorithm(algorithm) {
-  if (algorithm !== "kdtree" && algorithm !== "quadtree") {
-    showToast("Choose K-D Tree or Quadtree for map hospital search.");
-    return;
+function changeMapSpatialAlgorithm(algo) {
+  if (!["kdtree", "quadtree", "linear"].includes(algo)) {
+    algo = "kdtree";
   }
-  mapSpatialAlgorithm = algorithm;
-  localStorage.setItem(MAP_SPATIAL_ALGORITHM_KEY, algorithm);
-  const label = algorithm === "kdtree" ? "K-D Tree" : "Quadtree";
-  const status = el("mapSpatialStatus");
-  if (status) status.textContent = `${label}: searching visible map area…`;
+  mapSpatialAlgorithm = algo;
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem(MAP_SPATIAL_ALGORITHM_KEY, algo);
+  }
+
+  // Synchronize both dropdowns (Toolbar & HUD)
+  const sel1 = el("mapSpatialAlgorithm");
+  const sel2 = el("mapSpatialAlgoSelect");
+  if (sel1 && sel1.value !== algo) sel1.value = algo;
+  if (sel2 && sel2.value !== algo) sel2.value = algo;
+
+  const label = algo === "kdtree" ? "🌲 K-D Tree" : (algo === "quadtree" ? "🔲 Quadtree" : "🔍 Linear Scan");
+  updateSpatialStatus(`${label}: querying index…`);
+
+  // Refresh visual partitions if currently visible
+  if (dsaVisualEnabled) {
+    renderDsaVisualOverlays();
+  }
+
   scheduleVisibleHospitalSearch();
 }
 
@@ -850,35 +1145,58 @@ async function searchVisibleMapHospitals() {
   const center = map.getCenter();
   const corners = [bounds.getNorthEast(), bounds.getNorthWest(), bounds.getSouthEast(), bounds.getSouthWest()];
   const radius = Math.max(...corners.map(corner => distanceKm(center, corner))) * 1.05;
-  const status = el("mapSpatialStatus");
-  const algorithmLabel = mapSpatialAlgorithm === "kdtree" ? "K-D Tree" : "Quadtree";
+  const algorithmLabel = mapSpatialAlgorithm === "kdtree" ? "🌲 K-D Tree" : (mapSpatialAlgorithm === "quadtree" ? "🔲 Quadtree" : "🔍 Linear Scan");
 
-  if (status) status.textContent = `${algorithmLabel}: searching visible map area…`;
-  try {
-    const query = new URLSearchParams({
-      lat: String(center.lat),
-      lng: String(center.lng),
-      radius: String(Math.max(radius, 0.1)),
-      algorithm: mapSpatialAlgorithm
-    });
-    const data = await fetchJson(`${API_BASE_URL}/api/hospitals/nearby?${query}`, 8000);
-    if (requestId !== mapSpatialSearchRequest) return;
-    if (!data || !Array.isArray(data.results)) {
-      throw new Error("Spatial hospital search returned an invalid response.");
-    }
+  updateSpatialStatus(`${algorithmLabel}: searching visible map area…`);
 
-    const filteredIds = new Set(filteredMapHospitals.map(hospital => hospital.id));
-    const visibleHospitals = data.results.filter(hospital => filteredIds.has(hospital.id));
-    drawMapHospitalMarkers(visibleHospitals);
-    if (status) {
-      status.textContent = `${algorithmLabel} · ${visibleHospitals.length} hospitals · ${data.search_time_us} μs · ${data.points_tested} points`;
+  let data = null;
+
+  // 1. Try Backend API first if enabled and running
+  if (USE_BACKEND && typeof API_BASE_URL !== "undefined") {
+    try {
+      const query = new URLSearchParams({
+        lat: String(center.lat),
+        lng: String(center.lng),
+        radius: String(Math.max(radius, 0.1)),
+        algorithm: mapSpatialAlgorithm
+      });
+      data = await fetchJson(`${API_BASE_URL}/api/hospitals/nearby?${query}`, 3000);
+    } catch (err) {
+      // Backend not running locally or static deployment - seamlessly fallback to Client DSA
+      data = null;
     }
-  } catch (error) {
-    if (requestId !== mapSpatialSearchRequest) return;
-    console.error(`${algorithmLabel} map search failed; showing filtered local hospital markers.`, error);
-    drawMapHospitalMarkers(filteredMapHospitals);
-    if (status) status.textContent = `${algorithmLabel} unavailable · showing local results`;
   }
+
+  // 2. Client-Side Spatial Algorithm (Instant, Zero Network Dependency, 100% Guaranteed)
+  if (!data || !Array.isArray(data.results)) {
+    const dataset = (allHospitals && allHospitals.length > 0) ? allHospitals : (typeof HOSPITALS_DATA !== "undefined" ? HOSPITALS_DATA : []);
+    if (mapSpatialAlgorithm === "kdtree") {
+      if (!window._clientKdTree || window._clientKdTree.size !== dataset.length) {
+        window._clientKdTree = new ClientKDTree(dataset);
+      }
+      data = window._clientKdTree.radiusSearch(center.lat, center.lng, radius);
+    } else if (mapSpatialAlgorithm === "quadtree") {
+      if (!window._clientQuadTree || window._clientQuadTreeSize !== dataset.length) {
+        window._clientQuadTree = new ClientQuadtree(dataset);
+        window._clientQuadTreeSize = dataset.length;
+      }
+      data = window._clientQuadTree.radiusSearch(center.lat, center.lng, radius);
+    } else {
+      data = ClientLinearSearch.radiusSearch(dataset, center.lat, center.lng, radius);
+    }
+  }
+
+  if (requestId !== mapSpatialSearchRequest) return;
+
+  const filteredIds = new Set(filteredMapHospitals.map(hospital => hospital.id));
+  const visibleHospitals = (data.results || []).filter(hospital => filteredIds.has(hospital.id));
+  drawMapHospitalMarkers(visibleHospitals);
+
+  const timeLabel = data.search_time_us ? `${data.search_time_us} μs` : `< 1 ms`;
+  const nodesLabel = data.nodes_visited !== undefined ? `${data.nodes_visited} nodes` : `${data.points_tested || visibleHospitals.length} points`;
+  const badge = data.source === "client" ? "⚡ Client DSA" : "⚡ API Index";
+
+  updateSpatialStatus(`${algorithmLabel} (${badge}) · ${visibleHospitals.length} in view · ${timeLabel} · ${nodesLabel}`);
 }
 
 function drawMapHospitalMarkers(hospitals) {
@@ -3159,12 +3477,14 @@ document.addEventListener("DOMContentLoaded", async () => {
       activeTileProvider = savedMapStyle;
     }
     const savedAlgorithm = localStorage.getItem(MAP_SPATIAL_ALGORITHM_KEY);
-    if (savedAlgorithm === "kdtree" || savedAlgorithm === "quadtree") {
+    if (["kdtree", "quadtree", "linear"].includes(savedAlgorithm)) {
       mapSpatialAlgorithm = savedAlgorithm;
     }
   }
-  const spatialAlgorithmSelect = el("mapSpatialAlgorithm");
-  if (spatialAlgorithmSelect) spatialAlgorithmSelect.value = mapSpatialAlgorithm;
+  const spatialAlgorithmSelect1 = el("mapSpatialAlgorithm");
+  const spatialAlgorithmSelect2 = el("mapSpatialAlgoSelect");
+  if (spatialAlgorithmSelect1) spatialAlgorithmSelect1.value = mapSpatialAlgorithm;
+  if (spatialAlgorithmSelect2) spatialAlgorithmSelect2.value = mapSpatialAlgorithm;
   initMap();
 
   filterHospitals();

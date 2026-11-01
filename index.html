@@ -221,10 +221,11 @@
           <div class="map-layer-selector">
             <label for="mapSpatialAlgorithm" style="font-size:0.78rem; font-weight:700; color:var(--slate-600);">Map search:</label>
             <select id="mapSpatialAlgorithm" aria-label="Hospital map spatial search algorithm" onchange="changeMapSpatialAlgorithm(this.value)" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.84rem; font-weight:600;">
-              <option value="kdtree">K-D Tree</option>
-              <option value="quadtree">Quadtree</option>
+              <option value="kdtree">🌲 K-D Tree</option>
+              <option value="quadtree">🔲 Quadtree</option>
+              <option value="linear">🔍 Linear Scan</option>
             </select>
-            <span id="mapSpatialStatus" class="map-spatial-status" role="status" aria-live="polite">Spatial search ready</span>
+            <span id="mapSpatialStatusToolbar" class="map-spatial-status" role="status" aria-live="polite">⚡ Spatial search ready</span>
           </div>
           <div class="view-toggle" id="viewToggle" role="group" aria-label="Page layout">
             <button type="button" class="view-btn active" data-view="split" aria-pressed="true">Split (List + Map)</button>
@@ -375,7 +376,7 @@
                   <span id="dsaVisualIcon">👁️</span> <span id="dsaVisualText">Tree Partitions</span>
                 </button>
               </div>
-              <div style="font-size:0.78rem; font-weight:700; color:#047857;" id="mapSpatialStatus">
+              <div style="font-size:0.78rem; font-weight:700; color:#047857;" id="mapSpatialStatusHud">
                 ⚡ K-D Tree: 16 hospitals indexed
               </div>
             </div>
