@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin Dashboard - Hospital Finder (Gwalior)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">+</span>
+      <div>
+        <h1>Admin Dashboard</h1>
+        <p class="tagline">Hospital &amp; Emergency Facility Finder - Gwalior</p>
+      </div>
+    </div>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="index.html">Back to website</a>
+    </nav>
+  </header>
+
+  <div class="demo-banner" role="note">
+    <strong>Directory data and samples.</strong> Hospitals marked <em>Demo</em> are sample records. OpenStreetMap imports contain mapped
+    names and contact details only; bed / ICU / ambulance information remains unverified until you confirm it. Changes are stored in the SQLite database
+    and appear on the public website within a few seconds.
+  </div>
+
+  <main class="admin-main">
+
+    <!-- ===== SERVER PROBLEM MESSAGE ===== -->
+    <div id="serverError" class="admin-warning" hidden></div>
+
+    <!-- ===== LOGIN ===== -->
+    <section id="loginView" class="login-box" hidden>
+      <h2>Admin login</h2>
+      <div class="field">
+        <label for="loginUser">Username</label>
+        <input type="text" id="loginUser" autocomplete="username">
+      </div>
+      <div class="field">
+        <label for="loginPass">Password</label>
+        <input type="password" id="loginPass" autocomplete="current-password">
+      </div>
+      <p id="loginError" class="form-error" aria-live="polite"></p>
+      <button id="loginBtn" class="btn btn-primary" type="button">Log in</button>
+    </section>
+
+    <!-- ===== DASHBOARD ===== -->
+    <section id="dashView" hidden>
+      <div id="passwordWarning" class="admin-warning" hidden>
+        You are still using the default password. Please press <b>Change password</b> now.
+      </div>
+
+      <div class="admin-bar">
+        <div>
+          <h2>Hospitals</h2>
+          <p id="adminSummary" class="location-status"></p>
+        </div>
+        <div class="admin-actions">
+          <button id="addBtn" class="btn btn-primary" type="button">Add hospital</button>
+          <button id="osmBtn" class="btn btn-ghost" type="button">Import hospitals (OpenStreetMap)</button>
+          <button id="pwBtn" class="btn btn-ghost" type="button">Change password</button>
+          <button id="logoutBtn" class="btn btn-ghost" type="button">Log out</button>
+        </div>
+      </div>
+      <p id="flash" class="form-ok" aria-live="polite"></p>
+      <p id="osmReport" class="osm-report" aria-live="polite" hidden></p>
+
+      <div id="adminStats" class="admin-stats"></div>
+
+      <div class="admin-filter">
+        <input type="search" id="adminSearch" placeholder="Search hospitals..." aria-label="Search hospitals">
+        <select id="adminSource" aria-label="Filter by source">
+          <option value="all">All sources</option>
+          <option value="real">Public directory</option>
+          <option value="demo">Demo (fictional)</option>
+          <option value="unverified">Needs verification</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Hospital name</th><th>Type</th><th>Source</th><th>Available beds</th><th>ICU free</th>
+              <th>Status</th><th>Last updated</th><th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminRows"></tbody>
+        </table>
+      </div>
+
+      <div class="admin-bar" style="margin-top:34px;">
+        <div>
+          <h2>Doctors</h2>
+          <p class="location-status">Add clinician profiles only when their details have been checked.</p>
+        </div>
+        <button id="addDoctorBtn" class="btn btn-primary" type="button">Add doctor</button>
+      </div>
+      <div class="table-wrap">
+        <table class="admin-table">
+          <thead><tr><th>Doctor</th><th>Specialty</th><th>Hospital / Clinic</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="doctorRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== ADD / EDIT HOSPITAL ===== -->
+  <dialog id="hospitalDialog">
+    <div class="dialog-form">
+      <h2 id="dialogTitle">Add hospital</h2>
+      <div class="form-grid">
+        <div class="field full"><label for="fName">Hospital name</label><input type="text" id="fName" maxlength="120"></div>
+        <div class="field full"><label for="fPhotoUrl">Hospital photo URL (HTTPS)</label><input type="url" id="fPhotoUrl" placeholder="https://..." maxlength="1000"></div>
+        <div class="field full"><label for="fPhotoCredit">Photo credit / source</label><input type="text" id="fPhotoCredit" placeholder="Photographer or source link" maxlength="200"></div>
+        <div class="field">
+          <label for="fType">Type</label>
+          <select id="fType">
+            <option>Government</option><option>Private</option><option>Trust</option><option>Specialty</option><option>Unknown</option>
+          </select>
+        </div>
+        <div class="field"><label for="fPhone">Phone number</label><input type="text" id="fPhone" maxlength="25"></div>
+        <div class="field full"><label for="fAddress">Address</label><input type="text" id="fAddress" maxlength="200"></div>
+        <div class="field"><label for="fLat">Latitude</label><input type="number" id="fLat" step="any"></div>
+        <div class="field"><label for="fLng">Longitude</label><input type="number" id="fLng" step="any"></div>
+        <label class="check"><input type="checkbox" id="fEmergency"> 24x7 emergency</label>
+        <label class="check"><input type="checkbox" id="fActive"> Active (shown on website)</label>
+        <label class="check full"><input type="checkbox" id="fVerified"> <b>Verified</b>: I confirmed the emergency, bed, ICU and ambulance details with the hospital
+          (unticked = visitors see "not verified" instead of numbers)</label>
+      </div>
+      <p id="fSourceInfo" class="muted small"></p>
+
+      <div>
+        <p class="field-title"><b>Services</b></p>
+        <div class="service-checks" id="serviceChecks"></div>
+        <div class="field" style="margin-top:8px">
+          <label for="fOtherServices">Other services (separate with commas)</label>
+          <input type="text" id="fOtherServices" placeholder="e.g. Dialysis, Maternity">
+        </div>
+      </div>
+
+      <div>
+        <p class="field-title"><b>Bed availability</b></p>
+        <table class="bed-edit">
+          <thead><tr><th>Bed type</th><th>Total beds</th><th>Occupied</th><th>Available</th></tr></thead>
+          <tbody id="bedEditRows"></tbody>
+        </table>
+      </div>
+
+      <p id="dialogError" class="form-error" aria-live="polite"></p>
+      <div class="dialog-buttons">
+        <button id="dialogCancel" class="btn btn-ghost" type="button">Cancel</button>
+        <button id="dialogSave" class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== ADD / EDIT DOCTOR ===== -->
+  <dialog id="doctorDialog">
+    <div class="dialog-form">
+      <h2 id="doctorDialogTitle">Add doctor</h2>
+      <div class="form-grid">
+        <div class="field full"><label for="dName">Doctor name</label><input type="text" id="dName" maxlength="120"></div>
+        <div class="field"><label for="dQualification">Qualification</label><input type="text" id="dQualification" maxlength="160"></div>
+        <div class="field"><label for="dSpecialty">Specialty</label><input type="text" id="dSpecialty" maxlength="120"></div>
+        <div class="field">
+          <label for="dCategory">Category</label>
+          <select id="dCategory">
+            <option value="general">General medicine</option><option value="cardiology">Cardiology</option>
+            <option value="orthopedics">Orthopedics</option><option value="gynecology">Gynecology</option>
+            <option value="pediatrics">Pediatrics</option><option value="neurology">Neurology</option>
+            <option value="ophthalmology">Ophthalmology</option><option value="oncology">Oncology</option>
+            <option value="pulmonology">Pulmonology</option><option value="dermatology">Dermatology</option>
+            <option value="gastro">Gastroenterology</option>
+          </select>
+        </div>
+        <div class="field"><label for="dExperience">Experience (years)</label><input type="number" id="dExperience" min="0" max="80"></div>
+        <div class="field full">
+          <label for="dHospitalId">Link to a hospital listing (optional)</label>
+          <select id="dHospitalId"><option value="">Standalone clinic / enter manually</option></select>
+        </div>
+        <div class="field full"><label for="dHospital">Hospital / Clinic name</label><input type="text" id="dHospital" maxlength="120"></div>
+        <div class="field full"><label for="dAddress">Clinic address</label><input type="text" id="dAddress" maxlength="200"></div>
+        <div class="field"><label for="dPhone">Phone</label><input type="text" id="dPhone" maxlength="25"></div>
+        <div class="field"><label for="dFee">Consultation fee (₹)</label><input type="number" id="dFee" min="0" max="100000"></div>
+        <div class="field"><label for="dOpd">OPD timings</label><input type="text" id="dOpd" maxlength="120"></div>
+        <div class="field"><label for="dDays">Days available</label><input type="text" id="dDays" maxlength="80"></div>
+        <div class="field full"><label for="dAbout">Profile details</label><textarea id="dAbout" maxlength="1000" rows="3"></textarea></div>
+        <label class="check full"><input type="checkbox" id="dVerified"> I confirmed this doctor's name, specialty, clinic and contact details</label>
+      </div>
+      <p id="doctorDialogError" class="form-error" aria-live="polite"></p>
+      <div class="dialog-buttons">
+        <button id="doctorDialogCancel" class="btn btn-ghost" type="button">Cancel</button>
+        <button id="doctorDialogSave" class="btn btn-primary" type="button">Save</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== CHANGE PASSWORD ===== -->
+  <dialog id="pwDialog">
+    <div class="dialog-form">
+      <h2>Change password</h2>
+      <div class="field"><label for="pwCurrent">Current password</label><input type="password" id="pwCurrent" autocomplete="current-password"></div>
+      <div class="field"><label for="pwNew">New password (at least 8 characters)</label><input type="password" id="pwNew" autocomplete="new-password"></div>
+      <div class="field"><label for="pwNew2">Repeat new password</label><input type="password" id="pwNew2" autocomplete="new-password"></div>
+      <p id="pwError" class="form-error" aria-live="polite"></p>
+      <div class="dialog-buttons">
+        <button id="pwCancel" class="btn btn-ghost" type="button">Cancel</button>
+        <button id="pwSave" class="btn btn-primary" type="button">Save password</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="admin.js"></script>
+</body>
+</html>

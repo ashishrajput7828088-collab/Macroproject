@@ -1,0 +1,1301 @@
+[
+  {
+    "id": 10,
+    "name": "Bansal Eye Hospital & Laser Surgery Centre",
+    "type": "Specialty",
+    "category": "Super Speciality Eye Care",
+    "address": "Madhav Rao Scindia Marg, City Centre, Gwalior, MP 474002",
+    "locality": "City Centre",
+    "phone": "+91 751 2445500",
+    "emergencyPhone": "+91 98262 12345",
+    "ambulancePhone": "+91 98262 12345",
+    "email": "bansaleye@gmail.com",
+    "website": "http://bansaleyehospital.com",
+    "lat": 26.2135,
+    "lng": 78.1965,
+    "emergency24x7": false,
+    "traumaCenter": false,
+    "rating": 4.9,
+    "reviewsCount": 1380,
+    "opdTimings": "Mon - Sat: 09:30 AM - 07:30 PM",
+    "consultationFee": 500,
+    "description": "Premier eye care hospital in Central India. Equipped with Contoura Vision Lasik, stitchless Micro-Phaco cataract surgery, Vitreoretinal surgery, and Glaucoma clinics.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Contoura Vision Lasik",
+      "Micro-Phaco Cataract Surgery",
+      "Vitreoretina & Lasers",
+      "Cornea & Refractive Surgery",
+      "Pediatric Ophthalmology",
+      "Glaucoma Clinic",
+      "Optical Studio"
+    ],
+    "beds": {
+      "general": [
+        35,
+        18
+      ],
+      "icu": [
+        4,
+        1
+      ],
+      "emergency": [
+        5,
+        2
+      ],
+      "oxygen": [
+        12,
+        4
+      ],
+      "ventilator": [
+        2,
+        0
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 2,
+    "name": "BIMR Hospitals (Birla Institute of Medical Research)",
+    "type": "Trust",
+    "category": "Multi Super Speciality Hospital",
+    "address": "Surya Mandir Road, Residency Area, Morar, Gwalior, MP 474005",
+    "locality": "Morar Cantt",
+    "phone": "+91 751 2405600",
+    "emergencyPhone": "+91 751 2405605",
+    "ambulancePhone": "+91 751 2405601",
+    "email": "info@bimrhospital.com",
+    "website": "https://www.bimrhospital.com",
+    "lat": 26.2312,
+    "lng": 78.2215,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.8,
+    "reviewsCount": 1420,
+    "opdTimings": "Mon - Sat: 09:00 AM - 08:00 PM (Casualty 24x7)",
+    "consultationFee": 600,
+    "description": "Prestigious 350-bed multi-super-speciality hospital founded by the Birla Group. NABH accredited with state-of-the-art Cath Lab, Robotic Joint Replacement, and Critical Care Unit.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "24x7 Cardiac Emergency",
+      "Joint Replacement & Arthroscopy",
+      "Neurosurgery & Spine",
+      "Medical & Surgical Oncology",
+      "Advanced Gastroenterology",
+      "Intensive Critical Care",
+      "Dialysis Unit",
+      "Blood Component Separation",
+      "Pharmacy 24x7",
+      "Cardiac Mobile ICU"
+    ],
+    "beds": {
+      "general": [
+        280,
+        190
+      ],
+      "icu": [
+        50,
+        36
+      ],
+      "emergency": [
+        25,
+        14
+      ],
+      "oxygen": [
+        110,
+        75
+      ],
+      "ventilator": [
+        25,
+        17
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 4,
+    "name": "Apollo Clinic & Diagnostic Centre Gwalior",
+    "type": "Private",
+    "category": "Apollo Network Multi-Speciality",
+    "address": "Opp. High Court Road, City Centre, Gwalior, MP 474011",
+    "locality": "City Centre",
+    "phone": "+91 751 4001222",
+    "emergencyPhone": "1860 500 1066",
+    "ambulancePhone": "1066",
+    "email": "gwalior@apolloclinic.com",
+    "website": "https://www.apolloclinic.com",
+    "lat": 26.2198,
+    "lng": 78.2045,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.8,
+    "reviewsCount": 1150,
+    "opdTimings": "Mon - Sun: 08:00 AM - 09:00 PM",
+    "consultationFee": 700,
+    "description": "Apollo Hospitals network flagship centre in Gwalior providing super-specialist consultations, preventive health checks, 24x7 Apollo Pharmacy, and advanced MRI/CT diagnostics.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Cardiology Consultations",
+      "Orthopedic OPD",
+      "Pediatrics & Neonatology",
+      "Gynecology & Women Health",
+      "Apollo 24x7 Pharmacy",
+      "Advanced MRI & Ultrasound",
+      "Home Sample Collection",
+      "Preventive Health Checkups"
+    ],
+    "beds": {
+      "general": [
+        45,
+        24
+      ],
+      "icu": [
+        12,
+        6
+      ],
+      "emergency": [
+        10,
+        4
+      ],
+      "oxygen": [
+        25,
+        12
+      ],
+      "ventilator": [
+        6,
+        2
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 14,
+    "name": "Vatsalya Hospital & Maternity Home",
+    "type": "Private",
+    "category": "Infertility & Mother-Child Speciality",
+    "address": "Patel Nagar, Near City Centre, Gwalior, MP 474011",
+    "locality": "City Centre",
+    "phone": "+91 751 2235544",
+    "emergencyPhone": "+91 94251 17890",
+    "ambulancePhone": "+91 94251 17890",
+    "email": "vatsalyahospital@gmail.com",
+    "website": "",
+    "lat": 26.2142,
+    "lng": 78.2065,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.8,
+    "reviewsCount": 760,
+    "opdTimings": "Mon - Sat: 10:00 AM - 07:30 PM",
+    "consultationFee": 500,
+    "description": "Founded by senior gynecologist Dr. Rashmi Gupta. Specialises in advanced infertility management, test tube baby (IVF), high-risk pregnancies, and neonatal intensive care (NICU).",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Infertility & IVF Centre",
+      "High-Risk Pregnancy",
+      "Normal & Cesarean Delivery",
+      "NICU Level-II",
+      "Pediatrics",
+      "24x7 Emergency Labor",
+      "Pharmacy"
+    ],
+    "beds": {
+      "general": [
+        50,
+        28
+      ],
+      "icu": [
+        10,
+        5
+      ],
+      "emergency": [
+        8,
+        3
+      ],
+      "oxygen": [
+        20,
+        11
+      ],
+      "ventilator": [
+        4,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 21,
+    "name": "Chirayu Children Hospital & Neonatal ICU (NICU)",
+    "type": "Specialty",
+    "category": "Pediatric & Neonatal Super Speciality",
+    "address": "Patel Nagar, Near City Centre Bus Stop, Gwalior, MP 474011",
+    "locality": "City Centre / Patel Nagar",
+    "phone": "+91 751 2234000",
+    "emergencyPhone": "+91 751 2234001",
+    "ambulancePhone": "+91 751 2234000",
+    "email": "chirayukids.gwl@gmail.com",
+    "website": "",
+    "lat": 26.214,
+    "lng": 78.199,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.8,
+    "reviewsCount": 620,
+    "opdTimings": "Mon - Sat: 09:30 AM - 07:30 PM (Emergency 24x7)",
+    "consultationFee": 500,
+    "description": "Premier pediatric hospital in Gwalior equipped with Level-3 Neonatal Intensive Care (NICU), Pediatric Intensive Care (PICU), and advanced infant warmers.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Level-3 NICU (Neonatal ICU)",
+      "Pediatric Intensive Care (PICU)",
+      "Pediatric Surgery",
+      "Neonatal Ventilation",
+      "Growth & Vaccination Clinic",
+      "Emergency Pediatric Triage"
+    ],
+    "beds": {
+      "general": [
+        25,
+        14
+      ],
+      "icu": [
+        14,
+        9
+      ],
+      "emergency": [
+        6,
+        3
+      ],
+      "oxygen": [
+        20,
+        12
+      ],
+      "ventilator": [
+        6,
+        4
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 3,
+    "name": "Cancer Hospital & Research Institute (CHRI)",
+    "type": "Trust",
+    "category": "Regional Cancer Centre (Apex Oncology)",
+    "address": "Mandre Ki Mata Hills, Cancer Hills, Lashkar, Gwalior, MP 474009",
+    "locality": "Cancer Hills",
+    "phone": "+91 751 2415124",
+    "emergencyPhone": "+91 751 2415125",
+    "ambulancePhone": "+91 751 2415120",
+    "email": "contact@cancerhospitalgwalior.org",
+    "website": "http://cancerhospitalgwalior.org",
+    "lat": 26.1912,
+    "lng": 78.1568,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.7,
+    "reviewsCount": 980,
+    "opdTimings": "Mon - Sat: 09:00 AM - 05:00 PM",
+    "consultationFee": 500,
+    "description": "Recognized Regional Cancer Centre of Central India. Features Linear Accelerators, HDR Brachytherapy, Surgical Oncology, Bone Marrow Transplant, and Palliative Medicine.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Radiation Oncology (LINAC)",
+      "Surgical Oncology",
+      "Medical Chemotherapy Daycare",
+      "Nuclear Medicine & PET-CT",
+      "Onco-Pathology & Genomics",
+      "Palliative Care",
+      "Ambulance"
+    ],
+    "beds": {
+      "general": [
+        220,
+        155
+      ],
+      "icu": [
+        28,
+        18
+      ],
+      "emergency": [
+        18,
+        8
+      ],
+      "oxygen": [
+        70,
+        45
+      ],
+      "ventilator": [
+        15,
+        8
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 7,
+    "name": "Kalyan Memorial Hospital & Research Centre",
+    "type": "Private",
+    "category": "Super Speciality Hospital",
+    "address": "University Road, Near Thatipur, City Centre, Gwalior, MP 474011",
+    "locality": "City Centre / Thatipur",
+    "phone": "+91 751 2232001",
+    "emergencyPhone": "+91 94251 10002",
+    "ambulancePhone": "+91 94251 10002",
+    "email": "kalyanhospital@gmail.com",
+    "website": "https://kalyanmemorialhospital.com",
+    "lat": 26.2115,
+    "lng": 78.2098,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.7,
+    "reviewsCount": 890,
+    "opdTimings": "Mon - Sat: 09:30 AM - 08:30 PM",
+    "consultationFee": 500,
+    "description": "Multi-speciality hospital known for advanced cardiac care, renal dialysis unit, joint replacement, critical care, and trauma management.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Cardiology & Echo",
+      "Nephrology & Dialysis",
+      "Orthopedic Trauma",
+      "General & Laparoscopic Surgery",
+      "ICU & CCU",
+      "24x7 Ambulance",
+      "Pharmacy"
+    ],
+    "beds": {
+      "general": [
+        110,
+        68
+      ],
+      "icu": [
+        22,
+        13
+      ],
+      "emergency": [
+        15,
+        7
+      ],
+      "oxygen": [
+        45,
+        28
+      ],
+      "ventilator": [
+        12,
+        6
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 9,
+    "name": "Sheetla Sahay Super Speciality Hospital",
+    "type": "Trust",
+    "category": "Super Speciality & Polytrauma",
+    "address": "Cancer Hills Campus, Lashkar, Gwalior, MP 474009",
+    "locality": "Cancer Hills",
+    "phone": "+91 751 2415120",
+    "emergencyPhone": "+91 751 2415121",
+    "ambulancePhone": "+91 751 2415120",
+    "email": "sheetlasahayhospital@gmail.com",
+    "website": "",
+    "lat": 26.1925,
+    "lng": 78.1585,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.7,
+    "reviewsCount": 540,
+    "opdTimings": "Mon - Sat: 09:30 AM - 06:30 PM",
+    "consultationFee": 600,
+    "description": "High-tech super speciality hospital with a modern flat-panel Cath Lab, Neurosurgery OT, 24x7 Polytrauma response unit, and advanced Nephrology wing.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Interventional Cath Lab",
+      "Neuro & Spine Surgery",
+      "Nephrology & Hemodialysis",
+      "Polytrauma & Critical Care",
+      "24x7 Emergency",
+      "Ambulance",
+      "Blood Bank"
+    ],
+    "beds": {
+      "general": [
+        130,
+        82
+      ],
+      "icu": [
+        26,
+        16
+      ],
+      "emergency": [
+        16,
+        8
+      ],
+      "oxygen": [
+        50,
+        30
+      ],
+      "ventilator": [
+        12,
+        6
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 19,
+    "name": "K.D. Super Speciality Hospital",
+    "type": "Private",
+    "category": "Super Speciality & Kidney Care",
+    "address": "Near Tansen Tomb Road, Hazira, Gwalior, MP 474003",
+    "locality": "Hazira / Tansen Road",
+    "phone": "+91 751 2482255",
+    "emergencyPhone": "+91 751 2482256",
+    "ambulancePhone": "+91 751 2482255",
+    "email": "kd.hospitalgwl@gmail.com",
+    "website": "",
+    "lat": 26.2312,
+    "lng": 78.1755,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.7,
+    "reviewsCount": 410,
+    "opdTimings": "Mon - Sun: 24 Hours Open",
+    "consultationFee": 500,
+    "description": "Advanced multi-specialty healthcare centre near Hazira with modern dialysis units, intensive care facilities, and robotic trauma surgery.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Dialysis Unit 24x7",
+      "Nephrology & Urology",
+      "Critical Care & ICU",
+      "Joint Replacement",
+      "Gastroenterology",
+      "24x7 Emergency Trauma"
+    ],
+    "beds": {
+      "general": [
+        45,
+        28
+      ],
+      "icu": [
+        12,
+        8
+      ],
+      "emergency": [
+        8,
+        5
+      ],
+      "oxygen": [
+        25,
+        16
+      ],
+      "ventilator": [
+        4,
+        2
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 1,
+    "name": "Jaya Arogya Hospital (JAH Group) & GRMC",
+    "type": "Government",
+    "category": "Apex Super Speciality & Trauma Center",
+    "address": "Medical College Campus, Kampoo Road, Lashkar, Gwalior, MP 474001",
+    "locality": "Lashkar / Kampoo",
+    "phone": "+91 751 2403200",
+    "emergencyPhone": "+91 751 2403222",
+    "ambulancePhone": "108",
+    "email": "dean.grmc@mp.gov.in",
+    "website": "http://grmcgwalior.org",
+    "lat": 26.1985,
+    "lng": 78.1634,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.6,
+    "reviewsCount": 1840,
+    "opdTimings": "Mon - Sat: 08:30 AM - 01:30 PM (Emergency 24x7)",
+    "consultationFee": 20,
+    "description": "Apex government tertiary hospital & referral centre in Gwalior-Chambal division. Houses 1,150 beds, Level-1 Trauma Centre, Cath Lab, Burn Unit, and Central Blood Bank.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Level-1 Trauma Care",
+      "Interventional Cardiology",
+      "Neurology & Neurosurgery",
+      "Orthopedic Surgery",
+      "Nephrology & Dialysis Unit",
+      "General & Laparoscopic Surgery",
+      "Central Blood Bank 24x7",
+      "CT & MRI Diagnostics",
+      "Burn Intensive Care",
+      "Ambulance"
+    ],
+    "beds": {
+      "general": [
+        850,
+        590
+      ],
+      "icu": [
+        80,
+        54
+      ],
+      "emergency": [
+        60,
+        41
+      ],
+      "oxygen": [
+        220,
+        155
+      ],
+      "ventilator": [
+        40,
+        28
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 8,
+    "name": "Global Speciality Hospital",
+    "type": "Private",
+    "category": "NABH Accredited Multi Speciality",
+    "address": "New Govindpuri, Sachin Tendulkar Marg, City Centre, Gwalior, MP 474011",
+    "locality": "City Centre",
+    "phone": "+91 751 4099900",
+    "emergencyPhone": "+91 94253 08800",
+    "ambulancePhone": "+91 94253 08800",
+    "email": "contact@globalspecialityhospital.com",
+    "website": "http://globalspecialityhospital.com",
+    "lat": 26.2162,
+    "lng": 78.2014,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.6,
+    "reviewsCount": 680,
+    "opdTimings": "Mon - Sat: 10:00 AM - 08:00 PM",
+    "consultationFee": 550,
+    "description": "Centrally located multi-speciality hospital housing advanced Gastroenterology, Endoscopy, Pulmonology, Orthopedic Joint Replacement, and Critical Care.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Gastroenterology & Endoscopy",
+      "Pulmonology & Bronchoscopy",
+      "Orthopedics & Spine",
+      "Critical Care (ICU)",
+      "24x7 Emergency Response",
+      "Pharmacy",
+      "Ambulance"
+    ],
+    "beds": {
+      "general": [
+        95,
+        58
+      ],
+      "icu": [
+        18,
+        10
+      ],
+      "emergency": [
+        12,
+        5
+      ],
+      "oxygen": [
+        38,
+        22
+      ],
+      "ventilator": [
+        8,
+        3
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 13,
+    "name": "Sahara Hospital & Trauma Centre",
+    "type": "Private",
+    "category": "Multi Speciality & Trauma",
+    "address": "Near Railway Station Platform 4 side, Lashkar Road, Gwalior, MP 474002",
+    "locality": "Railway Station Area",
+    "phone": "+91 751 2420088",
+    "emergencyPhone": "+91 98260 77123",
+    "ambulancePhone": "+91 98260 77123",
+    "email": "saharahospitalgwl@gmail.com",
+    "website": "",
+    "lat": 26.2178,
+    "lng": 78.1882,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.6,
+    "reviewsCount": 590,
+    "opdTimings": "Mon - Sat: 09:00 AM - 08:00 PM",
+    "consultationFee": 450,
+    "description": "Strategic multi-speciality centre specialising in high-speed road accident polytrauma, fracture fixations, general surgery, and emergency critical care.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Polytrauma & Emergency OT",
+      "Orthopedic Joint Fixation",
+      "Urology & Kidney Stones",
+      "General Laparoscopy",
+      "ICU",
+      "Ambulance",
+      "Pharmacy 24x7"
+    ],
+    "beds": {
+      "general": [
+        80,
+        48
+      ],
+      "icu": [
+        15,
+        8
+      ],
+      "emergency": [
+        12,
+        5
+      ],
+      "oxygen": [
+        32,
+        18
+      ],
+      "ventilator": [
+        6,
+        2
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 15,
+    "name": "Maxcare Multispeciality Hospital",
+    "type": "Private",
+    "category": "Multi Speciality Hospital",
+    "address": "New Collectorate Road, City Centre, Gwalior, MP 474011",
+    "locality": "City Centre",
+    "phone": "+91 751 4018888",
+    "emergencyPhone": "+91 94257 23456",
+    "ambulancePhone": "+91 94257 23456",
+    "email": "maxcaregwalior@gmail.com",
+    "website": "",
+    "lat": 26.2225,
+    "lng": 78.212,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.6,
+    "reviewsCount": 510,
+    "opdTimings": "Mon - Sat: 09:30 AM - 08:00 PM",
+    "consultationFee": 500,
+    "description": "Modern facility offering advanced internal medicine, diabetology, pulmonology, critical care, dermatology, and diagnostic pathology.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Internal Medicine & Diabetes",
+      "Pulmonology & Asthma Care",
+      "Critical Care ICU",
+      "Dermatology & Hair Clinic",
+      "24x7 Emergency",
+      "Ambulance",
+      "Pharmacy"
+    ],
+    "beds": {
+      "general": [
+        75,
+        42
+      ],
+      "icu": [
+        14,
+        7
+      ],
+      "emergency": [
+        10,
+        4
+      ],
+      "oxygen": [
+        28,
+        14
+      ],
+      "ventilator": [
+        6,
+        2
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 18,
+    "name": "Scindia Devraj Hospital & Research Centre",
+    "type": "Private",
+    "category": "Multi-Speciality Centre",
+    "address": "Jayendraganj Main Market, Lashkar, Gwalior, MP 474009",
+    "locality": "Lashkar / Jayendraganj",
+    "phone": "+91 751 2423300",
+    "emergencyPhone": "+91 751 2423301",
+    "ambulancePhone": "+91 751 2423300",
+    "email": "info@scindiadevrajhospital.com",
+    "website": "",
+    "lat": 26.2052,
+    "lng": 78.1685,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.6,
+    "reviewsCount": 340,
+    "opdTimings": "Mon - Sat: 09:00 AM - 08:00 PM",
+    "consultationFee": 500,
+    "description": "Established multi-speciality medical centre in the heart of Lashkar providing comprehensive surgical, medical, and diagnostics care.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "General Surgery",
+      "Urology & Nephrology",
+      "Obstetrics & Gynecology",
+      "Internal Medicine",
+      "Pediatrics",
+      "24x7 Pharmacy",
+      "Digital X-Ray"
+    ],
+    "beds": {
+      "general": [
+        35,
+        20
+      ],
+      "icu": [
+        6,
+        4
+      ],
+      "emergency": [
+        5,
+        3
+      ],
+      "oxygen": [
+        15,
+        9
+      ],
+      "ventilator": [
+        2,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 22,
+    "name": "Shri Ram Hospital & Laparoscopy Centre",
+    "type": "Private",
+    "category": "Minimally Invasive Surgery & Laparoscopy",
+    "address": "Kampoo Main Road, Near Madhav Dispensary, Lashkar, Gwalior, MP 474001",
+    "locality": "Lashkar / Kampoo",
+    "phone": "+91 751 2419080",
+    "emergencyPhone": "+91 751 2419081",
+    "ambulancePhone": "+91 751 2419080",
+    "email": "info@shriramhospitalgwl.com",
+    "website": "",
+    "lat": 26.195,
+    "lng": 78.158,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.6,
+    "reviewsCount": 310,
+    "opdTimings": "Mon - Sat: 10:00 AM - 07:00 PM",
+    "consultationFee": 500,
+    "description": "Renowned centre for minimally invasive laparoscopic, gallbladder, hernia, and gynecological surgical interventions in Gwalior.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Advanced Laparoscopic Surgery",
+      "Gastrointestinal Surgery",
+      "Hernia & Gallbladder Centre",
+      "Gynecological Endoscopy",
+      "Intensive Care Unit (ICU)",
+      "24x7 Emergency OT"
+    ],
+    "beds": {
+      "general": [
+        42,
+        26
+      ],
+      "icu": [
+        8,
+        5
+      ],
+      "emergency": [
+        6,
+        3
+      ],
+      "oxygen": [
+        18,
+        11
+      ],
+      "ventilator": [
+        3,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 6,
+    "name": "Kamla Raja Hospital (KRH / JAH Campus)",
+    "type": "Government",
+    "category": "Mother & Child Super Speciality",
+    "address": "Medical College Campus, Kampoo, Gwalior, MP 474001",
+    "locality": "Lashkar / Kampoo",
+    "phone": "+91 751 2403300",
+    "emergencyPhone": "+91 751 2403322",
+    "ambulancePhone": "102",
+    "email": "krh.gwalior@mp.gov.in",
+    "website": "http://grmcgwalior.org/krh",
+    "lat": 26.1965,
+    "lng": 78.1618,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.5,
+    "reviewsCount": 1020,
+    "opdTimings": "Mon - Sat: 08:30 AM - 02:00 PM (Emergency 24x7)",
+    "consultationFee": 20,
+    "description": "Leading government maternity and pediatric hospital of Central India. Features 450 beds, Level-III NICU, PICU, high-risk pregnancy delivery units, and 24x7 emergency labor room.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Obstetrics & High-Risk Pregnancy",
+      "Level-III Neonatal ICU (NICU)",
+      "Pediatric Intensive Care (PICU)",
+      "Painless Delivery Units",
+      "Infertility Clinic",
+      "24x7 Emergency Obstetric Care",
+      "Janani Express 102"
+    ],
+    "beds": {
+      "general": [
+        420,
+        305
+      ],
+      "icu": [
+        45,
+        30
+      ],
+      "emergency": [
+        35,
+        22
+      ],
+      "oxygen": [
+        130,
+        88
+      ],
+      "ventilator": [
+        20,
+        13
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 11,
+    "name": "Nidaan Heart & Maternity Hospital",
+    "type": "Private",
+    "category": "Cardiac & Maternity Speciality",
+    "address": "Near Phoolbagh Chowk, Lashkar, Gwalior, MP 474002",
+    "locality": "Phoolbagh / Lashkar",
+    "phone": "+91 751 2341100",
+    "emergencyPhone": "+91 98270 54321",
+    "ambulancePhone": "+91 98270 54321",
+    "email": "nidaan.gwalior@gmail.com",
+    "website": "",
+    "lat": 26.2088,
+    "lng": 78.1745,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.5,
+    "reviewsCount": 480,
+    "opdTimings": "Mon - Sat: 10:00 AM - 08:00 PM",
+    "consultationFee": 500,
+    "description": "Specialized non-invasive cardiology and obstetric hospital equipped with 2D Echo, TMT, Holter monitoring, painless labor suites, and neonatal intensive nursery.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Cardiology Consultations",
+      "2D Echo & Stress TMT",
+      "Painless Normal Delivery",
+      "Cesarean & High-Risk Pregnancy",
+      "ICU & CCU",
+      "24x7 Pharmacy",
+      "Ambulance"
+    ],
+    "beds": {
+      "general": [
+        55,
+        32
+      ],
+      "icu": [
+        12,
+        6
+      ],
+      "emergency": [
+        8,
+        3
+      ],
+      "oxygen": [
+        22,
+        12
+      ],
+      "ventilator": [
+        4,
+        2
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 16,
+    "name": "Janak Hospital & Laparoscopy Centre",
+    "type": "Private",
+    "category": "Surgical Speciality Hospital",
+    "address": "Morar Road, Near Thatipur, Gwalior, MP 474005",
+    "locality": "Thatipur",
+    "phone": "+91 751 2345099",
+    "emergencyPhone": "+91 98262 55443",
+    "ambulancePhone": "+91 98262 55443",
+    "email": "janakhospital@gmail.com",
+    "website": "",
+    "lat": 26.221,
+    "lng": 78.217,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.5,
+    "reviewsCount": 420,
+    "opdTimings": "Mon - Sat: 10:00 AM - 07:00 PM",
+    "consultationFee": 450,
+    "description": "Dedicated surgical centre offering advanced laparoscopic gallbladder, hernia, appendix, and endoscopic urology procedures with fast post-operative recovery.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Laparoscopic General Surgery",
+      "Endourology & Kidney Stones",
+      "Trauma & Fracture Fixation",
+      "ICU Support",
+      "24x7 Emergency",
+      "Pharmacy"
+    ],
+    "beds": {
+      "general": [
+        40,
+        22
+      ],
+      "icu": [
+        8,
+        4
+      ],
+      "emergency": [
+        6,
+        2
+      ],
+      "oxygen": [
+        15,
+        7
+      ],
+      "ventilator": [
+        3,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 17,
+    "name": "Gwalior Mansik Arogyashala (Mental Health & Neuroscience Institute)",
+    "type": "Government",
+    "category": "Apex Psychiatric & Neuroscience Hospital",
+    "address": "Jail Road, Near Central Jail, Gwalior, MP 474003",
+    "locality": "Hazira / Jail Road",
+    "phone": "+91 751 2481014",
+    "emergencyPhone": "+91 751 2481015",
+    "ambulancePhone": "108",
+    "email": "director.gma@mp.gov.in",
+    "website": "http://gwaliormentalhospital.org",
+    "lat": 26.223,
+    "lng": 78.188,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.5,
+    "reviewsCount": 520,
+    "opdTimings": "Mon - Sat: 09:00 AM - 02:00 PM (Emergency 24x7)",
+    "consultationFee": 20,
+    "description": "Historic government apex institute established in 1935 for psychiatric care, behavioral sciences, de-addiction therapy, and clinical neuro-psychology in Madhya Pradesh.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "Psychiatry & De-Addiction",
+      "Clinical Psychology",
+      "Neuro-Psychiatry",
+      "Emergency 24x7 Crisis Cell",
+      "Rehabilitation & Counseling",
+      "Electroencephalogram (EEG)",
+      "Pharmacy & Social Work"
+    ],
+    "beds": {
+      "general": [
+        180,
+        110
+      ],
+      "icu": [
+        10,
+        6
+      ],
+      "emergency": [
+        12,
+        7
+      ],
+      "oxygen": [
+        35,
+        20
+      ],
+      "ventilator": [
+        2,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 20,
+    "name": "Navjeevan Multispeciality Hospital",
+    "type": "Private",
+    "category": "Multispeciality Hospital",
+    "address": "Airport Road, Near Gole Ka Mandir, Gwalior, MP 474005",
+    "locality": "Gole Ka Mandir / Airport Road",
+    "phone": "+91 751 2490011",
+    "emergencyPhone": "+91 751 2490012",
+    "ambulancePhone": "+91 751 2490011",
+    "email": "care@navjeevangwalior.org",
+    "website": "",
+    "lat": 26.2425,
+    "lng": 78.212,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.5,
+    "reviewsCount": 285,
+    "opdTimings": "Mon - Sat: 09:00 AM - 08:30 PM",
+    "consultationFee": 450,
+    "description": "Trusted community multi-speciality hospital catering to Gole Ka Mandir, Maharajpura, and Airport Road catchment.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "General Medicine",
+      "Pediatrics & Child Care",
+      "Orthopedic Surgery",
+      "Pathology & Ultrasound",
+      "24x7 Casualty",
+      "Day Care Surgeries"
+    ],
+    "beds": {
+      "general": [
+        38,
+        22
+      ],
+      "icu": [
+        8,
+        5
+      ],
+      "emergency": [
+        6,
+        4
+      ],
+      "oxygen": [
+        20,
+        13
+      ],
+      "ventilator": [
+        2,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 5,
+    "name": "Civil Hospital Morar (District Hospital Gwalior)",
+    "type": "Government",
+    "category": "District Government Hospital",
+    "address": "Main Hospital Road, Morar Cantt, Gwalior, MP 474006",
+    "locality": "Morar Cantt",
+    "phone": "+91 751 2368212",
+    "emergencyPhone": "108",
+    "ambulancePhone": "108",
+    "email": "civilhospital.morar@mp.gov.in",
+    "website": "",
+    "lat": 26.2268,
+    "lng": 78.2295,
+    "emergency24x7": true,
+    "traumaCenter": true,
+    "rating": 4.3,
+    "reviewsCount": 780,
+    "opdTimings": "Mon - Sat: 08:30 AM - 02:00 PM (Emergency 24x7)",
+    "consultationFee": 10,
+    "description": "Major public hospital serving eastern Gwalior and Chambal. Provides free emergency care, round-the-clock maternity services, free generic drug dispensary, and blood storage.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "24x7 Emergency Casualty",
+      "General Medicine",
+      "Maternity & Obstetric Ward",
+      "Pediatric Care",
+      "Free Drug Dispensary",
+      "Pathology Lab",
+      "Ambulance 108"
+    ],
+    "beds": {
+      "general": [
+        240,
+        165
+      ],
+      "icu": [
+        20,
+        11
+      ],
+      "emergency": [
+        25,
+        15
+      ],
+      "oxygen": [
+        80,
+        50
+      ],
+      "ventilator": [
+        10,
+        4
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  },
+  {
+    "id": 12,
+    "name": "Hazira Civil Hospital",
+    "type": "Government",
+    "category": "Community Civil Hospital",
+    "address": "Hazira Chowk, Tansen Road, Gwalior, MP 474003",
+    "locality": "Hazira",
+    "phone": "+91 751 2480112",
+    "emergencyPhone": "108",
+    "ambulancePhone": "108",
+    "email": "hazira.hospital@mp.gov.in",
+    "website": "",
+    "lat": 26.2285,
+    "lng": 78.1788,
+    "emergency24x7": true,
+    "traumaCenter": false,
+    "rating": 4.2,
+    "reviewsCount": 410,
+    "opdTimings": "Mon - Sat: 08:30 AM - 02:00 PM (Emergency 24x7)",
+    "consultationFee": 10,
+    "description": "Government community civil hospital providing 24x7 primary emergency, maternal & infant care, immunisation, and free medicine distribution for northern Gwalior.",
+    "verified": true,
+    "active": true,
+    "source": "real",
+    "photoUrl": "",
+    "photoCredit": "",
+    "services": [
+      "24x7 Emergency Casualty",
+      "General Medicine",
+      "Maternity Ward",
+      "Child Immunisation",
+      "Free Pharmacy",
+      "Ambulance 108"
+    ],
+    "beds": {
+      "general": [
+        90,
+        55
+      ],
+      "icu": [
+        10,
+        4
+      ],
+      "emergency": [
+        15,
+        7
+      ],
+      "oxygen": [
+        30,
+        16
+      ],
+      "ventilator": [
+        4,
+        1
+      ]
+    },
+    "lastUpdated": "2026-11-01T05:35:11+00:00"
+  }
+]

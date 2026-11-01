@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Arogya Gwalior | Hospital Finder, Doctor Appointments, Blood Banks &amp; AI Health Guide</title>
+
+  <!-- Google Fonts: Inter & Plus Jakarta Sans for Enterprise Medical UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS for Mapbox & Spatial GIS Maps -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css?v=pro-hospital-theme">
+</head>
+<body>
+
+  <!-- ===== 1. TOP EMERGENCY HELPLINE TICKER ===== -->
+  <aside class="emergency-ticker" role="complementary" aria-label="Emergency numbers">
+    <div class="ticker-content">
+      <span class="ticker-badge">🚨 24x7 EMERGENCY DISPATCH</span>
+      <span class="ticker-text">
+        National Ambulance: <a href="tel:108"><strong>108</strong></a> &bull; Police/Medical: <a href="tel:112"><strong>112</strong></a> &bull;
+        JAH Trauma Helpline: <a href="tel:07512403222"><strong>0751-2403222</strong></a> &bull;
+        BIMR Emergency: <a href="tel:07512405605"><strong>0751-2405605</strong></a> &bull;
+        Blood Bank Central: <a href="tel:07512403233"><strong>0751-2403233</strong></a>
+      </span>
+      <button type="button" class="btn btn-sm btn-sos-trigger" onclick="openEmergencySosModal()">
+        🚨 SOS EMERGENCY DISPATCH
+      </button>
+    </div>
+  </aside>
+
+  <!-- ===== 2. SITE HEADER (Apollo 24/7 & Practo Inspired) ===== -->
+  <header class="site-header">
+    <div class="header-container">
+      <div class="brand" onclick="navigateTo('finder')">
+        <div class="brand-logo" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M12 2v20M2 12h20"/>
+          </svg>
+        </div>
+        <div class="brand-info">
+          <h1>Arogya Gwalior</h1>
+          <p class="tagline">Enterprise Healthcare, Hospital &amp; Doctor Network</p>
+        </div>
+      </div>
+
+      <div class="location-pill" title="Selected Location">
+        <span class="loc-icon">📍</span>
+        <span class="loc-name">Gwalior, Madhya Pradesh</span>
+      </div>
+
+      <nav class="main-nav" id="mainNav" aria-label="Main Navigation">
+        <button type="button" class="nav-item active" data-target="finder">🏥 Hospitals &amp; Map</button>
+        <button type="button" class="nav-item" data-target="doctors-section">👨‍⚕️ Expert Doctors</button>
+        <button type="button" class="nav-item" data-target="book-section" onclick="openBookingModal()">📅 Book Appointment</button>
+        <button type="button" class="nav-item nav-ai-pill" data-target="ai-doctor-section">🤖 Swasthya AI</button>
+        <button type="button" class="nav-item" data-target="blood-banks-section">🩸 Blood Banks</button>
+        <button type="button" class="nav-item" data-target="ambulances-section">🚑 Ambulances</button>
+        <button type="button" class="nav-item" data-target="my-appointments-section">
+          📋 My Bookings <span id="navApptBadge" class="count-pill">0</span>
+        </button>
+        <button type="button" class="nav-item" data-target="algoLab">🧪 Algorithm Lab</button>
+        <button type="button" class="nav-item nav-map-btn" onclick="openMapSettingsModal()">🗺️ Map Settings</button>
+        <a href="admin.html" class="nav-item nav-admin-link">⚙️ Admin</a>
+      </nav>
+
+      <!-- Theme Toggle & Auth profile area -->
+      <div class="header-right-actions">
+        <button type="button" id="themeToggleBtn" class="theme-toggle-btn" onclick="toggleTheme()" title="Toggle Dark/Light Mode" aria-label="Toggle theme">
+          <span id="themeToggleIcon" class="theme-icon">🌙</span>
+          <span id="themeToggleText" class="theme-label">Dark</span>
+        </button>
+        <div class="header-auth" id="headerAuthArea">
+          <button type="button" id="openAuthBtn" class="btn btn-auth" onclick="openAuthModal('login')">
+            <span>Sign In / Sign Up</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== 3. APOLLO-STYLE HERO BANNER ===== -->
+  <section class="hero-section" id="heroSection">
+    <div class="hero-content">
+      <span class="hero-badge">🌟 Gwalior Healthcare Network</span>
+      <h2 class="hero-title">Hospitals, Doctors &amp; Emergency Care in Gwalior</h2>
+      <p class="hero-subtitle">
+        Track ICU bed availability, consult top specialists, check blood bank inventory, dispatch ambulances with live GPS, and check symptoms with Clinical AI.
+      </p>
+
+      <!-- Quick Action Cards (Apollo 24/7 Inspired) -->
+      <div class="hero-action-grid">
+        <div class="action-card" onclick="openBookingModal()">
+          <div class="card-icon c-blue">📅</div>
+          <div class="card-text">
+            <h3>Book Doctor Appointment</h3>
+            <p>Direct OPD &amp; Video consultation from home</p>
+          </div>
+          <span class="card-arrow">&rarr;</span>
+        </div>
+
+        <div class="action-card" onclick="openEmergencySosModal()">
+          <div class="card-icon c-red">🚨</div>
+          <div class="card-text">
+            <h3>Emergency 1-Click SOS</h3>
+            <p>Instant GPS dispatch &amp; nearest trauma ICU</p>
+          </div>
+          <span class="card-arrow">&rarr;</span>
+        </div>
+
+        <div class="action-card" onclick="switchMainTab('ai-doctor-section')">
+          <div class="card-icon c-green">🤖</div>
+          <div class="card-text">
+            <h3>Swasthya AI Doctor</h3>
+            <p>Explain symptoms, get clinical triage &amp; advice</p>
+          </div>
+          <span class="card-arrow">&rarr;</span>
+        </div>
+
+        <div class="action-card" onclick="switchMainTab('blood-banks-section')">
+          <div class="card-icon c-purple">🩸</div>
+          <div class="card-text">
+            <h3>Blood Bank Directory</h3>
+            <p>Find blood banks and available blood group information</p>
+          </div>
+          <span class="card-arrow">&rarr;</span>
+        </div>
+      </div>
+
+      <!-- Specialty Category Pills -->
+      <div class="specialty-strip-wrapper">
+        <h3 class="specialty-title">Consult Leading Specialists in Gwalior</h3>
+        <div class="specialty-pills">
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('all')">
+            <span class="spec-emoji">🌟</span> All Specialists
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('general')">
+            <span class="spec-emoji">🩺</span> General Physician
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('cardiology')">
+            <span class="spec-emoji">🫀</span> Cardiologist (Heart)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('orthopedics')">
+            <span class="spec-emoji">🦴</span> Orthopedic (Bones/Joints)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('gynecology')">
+            <span class="spec-emoji">🤰</span> Gynecologist &amp; Maternity
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('pediatrics')">
+            <span class="spec-emoji">👶</span> Pediatrician (Child Care)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('neurology')">
+            <span class="spec-emoji">🧠</span> Neurosurgeon (Brain &amp; Spine)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('ophthalmology')">
+            <span class="spec-emoji">👁️</span> Eye Specialist (Ophthalmologist)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('oncology')">
+            <span class="spec-emoji">🔬</span> Oncologist (Cancer)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('pulmonology')">
+            <span class="spec-emoji">🫁</span> Pulmonologist (Chest &amp; Lungs)
+          </button>
+          <button type="button" class="spec-pill" onclick="filterBySpecialty('dermatology')">
+            <span class="spec-emoji">✨</span> Dermatologist (Skin &amp; Hair)
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 4. EMERGENCY MODE BAR ===== -->
+  <section class="emergency-bar" id="emergencyBar" aria-label="Emergency mode controls" hidden>
+    <div class="em-top">
+      <div class="em-title-wrap">
+        <span class="em-pulsing-dot"></span>
+        <p class="em-title">EMERGENCY MODE ACTIVE &bull; 24x7 TRAUMA &amp; ICU HOSPITALS FIRST</p>
+      </div>
+      <button id="emergencyExit" class="btn btn-ghost-white" type="button">Exit Emergency Mode</button>
+    </div>
+    <p class="em-warning">
+      Hospitals with confirmed <strong>24x7 Emergency Departments, Trauma Resuscitation, and Free ICU Beds</strong> are prioritized.
+      In critical emergencies, call <a href="tel:108">108</a> (Ambulance) or <a href="tel:07512403222">0751-2403222</a> (JAH Trauma).
+    </p>
+    <div class="em-filters">
+      <label class="em-chip"><input type="checkbox" id="emIcu"> ICU Bed Available</label>
+      <label class="em-chip"><input type="checkbox" id="emVent"> Ventilator Available</label>
+      <label class="em-chip"><input type="checkbox" id="emAmb"> Ambulance Service</label>
+      <label class="em-chip"><input type="checkbox" id="emAll"> Also Show Other Facilities</label>
+    </div>
+    <div id="emDashboard" class="em-dashboard"></div>
+  </section>
+
+  <!-- ===== 5. MAIN APPLICATION CONTAINER ===== -->
+  <main class="app-container" id="mainContainer">
+
+    <!-- TAB 1: HOSPITALS & MAP SECTION -->
+    <div class="tab-pane active" id="pane-finder">
+      <div class="section-heading-bar">
+        <div>
+          <h2 class="section-title">🏥 Hospitals in Gwalior</h2>
+          <p class="section-sub">Hospital details, facilities, contact information and directions.</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <!-- Map Style Switcher Dropdown -->
+          <div class="map-layer-selector">
+            <label for="mapLayerSelect" style="font-size:0.78rem; font-weight:700; color:var(--slate-600);">Map View:</label>
+            <select id="mapLayerSelect" onchange="changeMapLayer(this.value)" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.84rem; font-weight:600;">
+              <option value="arcgisStreets">Esri World Street Map</option>
+              <option value="arcgisSatellite">Esri World Imagery</option>
+              <option value="mapboxStreets">Mapbox HD Streets</option>
+              <option value="mapboxSatellite">Satellite Earth View</option>
+              <option value="osm">OpenStreetMap Standard</option>
+            </select>
+          </div>
+          <div class="map-layer-selector">
+            <label for="mapSpatialAlgorithm" style="font-size:0.78rem; font-weight:700; color:var(--slate-600);">Map search:</label>
+            <select id="mapSpatialAlgorithm" aria-label="Hospital map spatial search algorithm" onchange="changeMapSpatialAlgorithm(this.value)" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.84rem; font-weight:600;">
+              <option value="kdtree">K-D Tree</option>
+              <option value="quadtree">Quadtree</option>
+            </select>
+            <span id="mapSpatialStatus" class="map-spatial-status" role="status" aria-live="polite">Spatial search ready</span>
+          </div>
+          <div class="view-toggle" id="viewToggle" role="group" aria-label="Page layout">
+            <button type="button" class="view-btn active" data-view="split" aria-pressed="true">Split (List + Map)</button>
+            <button type="button" class="view-btn" data-view="list" aria-pressed="false">List Only</button>
+            <button type="button" class="view-btn" data-view="map" aria-pressed="false">Full Map</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Search & Filters Toolbar -->
+      <div class="toolbar-card">
+        <div class="toolbar-search-row">
+          <div class="input-with-icon">
+            <span class="in-icon">🔍</span>
+            <input type="search" id="searchInput" placeholder="Search hospitals (e.g. JAH, BIMR, Morar, Cancer Hospital, City Centre, ICU)...">
+          </div>
+          <button id="locateBtn" class="btn btn-primary" type="button">
+            <span>🎯 Use My Location</span>
+          </button>
+          <button id="resetBtn" class="btn btn-ghost" type="button">Clear Filters</button>
+        </div>
+
+        <div class="location-status-row">
+          <span id="locationStatus" class="location-status" aria-live="polite">Centred on Gwalior (26.2183° N, 78.1828° E)</span>
+          <button id="manualBtn" class="link-btn" type="button">Set location manually</button>
+        </div>
+
+        <!-- Manual location input -->
+        <div id="manualLocation" class="manual-location" hidden>
+          <p><strong>Set your exact area:</strong> Choose an area of Gwalior or click on the map.</p>
+          <div class="manual-row">
+            <input type="search" id="manualInput" placeholder="e.g. City Centre, Lashkar, Morar, Thatipur, Kampoo" aria-label="Place name">
+            <button id="manualSearchBtn" class="btn btn-primary btn-sm" type="button">Find</button>
+            <select id="presetArea" aria-label="Choose an area of Gwalior">
+              <option value="">Choose Gwalior Area...</option>
+            </select>
+            <button id="pickMapBtn" class="btn btn-ghost btn-sm" type="button">Click Map</button>
+          </div>
+        </div>
+
+        <!-- Advanced Filter Details -->
+        <details class="filter-panel" id="filterPanel" open>
+          <summary>
+            <span>Filters &amp; Preferences</span>
+            <span id="filterCount" class="count-pill">0</span>
+          </summary>
+          <div class="filters-grid">
+            <div class="field">
+              <label for="typeFilter">Hospital Type</label>
+              <select id="typeFilter">
+                <option value="all">All Types</option>
+                <option value="Government">Government Hospitals</option>
+                <option value="Private">Private Hospitals</option>
+                <option value="Trust">Trust &amp; Charitable</option>
+                <option value="Specialty">Specialty Clinics</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="bedFilter">Bed Availability</label>
+              <select id="bedFilter">
+                <option value="all">All Beds Combined</option>
+                <option value="general">General Ward Beds</option>
+                <option value="icu">ICU Beds</option>
+                <option value="emergency">Emergency Beds</option>
+                <option value="oxygen">Oxygen-supported Beds</option>
+                <option value="ventilator">Ventilator Beds</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="minBeds">Minimum Free Beds</label>
+              <input type="number" id="minBeds" min="0" value="0">
+            </div>
+
+            <div class="field">
+              <label for="sortBy">Sort By</label>
+              <select id="sortBy">
+                <option value="distance">Nearest First</option>
+                <option value="rating">Highest Rated</option>
+                <option value="beds">Most Total Beds</option>
+                <option value="icu">Most ICU Beds</option>
+                <option value="name">Name (A to Z)</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="radiusFilter">Distance Radius</label>
+              <select id="radiusFilter">
+                <option value="0">Any Distance (All Gwalior)</option>
+                <option value="2">Within 2 km</option>
+                <option value="5">Within 5 km</option>
+                <option value="10">Within 10 km</option>
+                <option value="20">Within 20 km</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="algoSelect">DSA Spatial Search</label>
+              <select id="algoSelect">
+                <option value="kdtree">K-D Tree (Fast Spatial Search)</option>
+                <option value="quadtree">Quadtree (Area Bounding Search)</option>
+                <option value="linear">Linear (Brute Force O(n))</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="feature-checks-row">
+            <label class="check-pill"><input type="checkbox" id="emergencyOnly"> 🚨 24x7 Emergency</label>
+            <label class="check-pill"><input type="checkbox" id="icuOnly"> 🛏️ ICU Available</label>
+            <label class="check-pill"><input type="checkbox" id="ventOnly"> 💨 Ventilator Available</label>
+            <label class="check-pill"><input type="checkbox" id="oxygenOnly"> 🧪 Oxygen Beds</label>
+            <label class="check-pill"><input type="checkbox" id="ambulanceOnly"> 🚑 Ambulance 24x7</label>
+            <label class="check-pill"><input type="checkbox" id="bloodOnly"> 🩸 Blood Bank</label>
+            <label class="check-pill"><input type="checkbox" id="favOnly"> ⭐ Favourites Only</label>
+          </div>
+        </details>
+      </div>
+
+      <!-- Live Search Status -->
+      <p id="liveStatus" class="live-status" aria-live="polite"></p>
+
+      <!-- RESULTS: HOSPITAL LIST + MAP SPLIT VIEW -->
+      <div class="layout view-split" id="layout">
+        <!-- Hospital Cards Column -->
+        <section class="results-column" aria-label="Hospital List">
+          <div class="results-header">
+            <span id="resultCount" class="result-count">Loading hospitals...</span>
+            <span id="searchNote" class="search-note"></span>
+          </div>
+          <div id="hospitalList" class="hospital-list"></div>
+        </section>
+
+        <!-- Interactive Map Column -->
+        <section class="map-column" id="map-section" aria-label="Hospital Map">
+          <div class="map-sidebar-stack">
+            <!-- ⚡ Real-Time Spatial Indexing HUD (KD-Tree & Quadtree) -->
+            <div class="spatial-indexing-hud" id="spatialHud">
+              <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#10b981; box-shadow:0 0 8px #10b981;"></span>
+                <strong style="font-size:0.83rem; color:#064e3b;">⚡ Spatial Index:</strong>
+                <select id="mapSpatialAlgoSelect" class="algo-pill-select" aria-label="Spatial search algorithm" onchange="changeMapSpatialAlgorithm(this.value)">
+                  <option value="kdtree">🌲 2D K-D Tree (O(log n))</option>
+                  <option value="quadtree">🔲 Quadtree (Spatial Grid)</option>
+                  <option value="linear">🔍 Brute Force Linear O(n)</option>
+                </select>
+                <button type="button" class="btn-dsa-visualize" id="btnToggleDsaVisual" onclick="toggleDsaVisualOverlays()" title="Overlay KD-Tree & Quadtree partition grids on the map">
+                  <span id="dsaVisualIcon">👁️</span> <span id="dsaVisualText">Tree Partitions</span>
+                </button>
+              </div>
+              <div style="font-size:0.78rem; font-weight:700; color:#047857;" id="mapSpatialStatus">
+                ⚡ K-D Tree: 16 hospitals indexed
+              </div>
+            </div>
+
+            <div class="map-container-card">
+            <div class="map-wrap">
+              <div id="map"></div>
+              <div id="mapStatus" class="map-status" role="status" aria-live="polite">Loading map tiles…</div>
+
+              <!-- Map Floating Toolbar -->
+              <div class="map-floating-tools">
+                <button type="button" class="map-tool-btn" id="mapDsaVisualBtn" onclick="toggleDsaVisualOverlays()" title="Toggle KD-Tree & Quadtree Visual Partitions">🌐</button>
+                <button type="button" class="map-tool-btn" id="mapLocateBtn" title="Center on my location">🎯</button>
+                <button type="button" class="map-tool-btn" id="mapResetBtn" title="Reset Gwalior view">🗺️</button>
+                <button type="button" class="map-tool-btn" id="mapEmergencyBtn" title="Show only 24x7 emergency">🚨</button>
+                <button type="button" class="map-tool-btn" onclick="openMapSettingsModal()" title="Map API Key &amp; Style Settings">⚙️</button>
+              </div>
+
+              <!-- Map Legend -->
+              <div class="map-legend" aria-label="Map legend">
+                <span><i class="dot m-red"></i> 24x7 Emergency Hospital</span>
+                <span><i class="dot m-blue"></i> Government Medical Centre</span>
+                <span><i class="dot m-teal"></i> Private / Trust Hospital</span>
+                <span><i class="dot m-purple"></i> Eye / Specialty Clinic</span>
+                <span><i class="dot m-user"></i> You are here</span>
+              </div>
+            </div>
+            <div id="routeInfo" class="route-info-card" hidden></div>
+          </div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- TAB 2: EXPERT DOCTORS DIRECTORY -->
+    <div class="tab-pane" id="pane-doctors-section">
+      <div class="section-heading-bar">
+        <div>
+          <h2 class="section-title">👨‍⚕️ Expert Doctors in Gwalior</h2>
+          <p class="section-sub">Consult leading physicians, cardiologists, gynecologists, neurologists &amp; surgeons.</p>
+        </div>
+        <div class="doctor-search-box">
+          <input type="search" id="doctorSearchInput" placeholder="Search doctor by name, specialty, or clinic..." aria-label="Search doctors">
+        </div>
+      </div>
+
+      <!-- Doctor Category Tabs -->
+      <div class="doctor-categories-bar" id="doctorCategoryBar">
+        <button type="button" class="doc-cat-btn active" data-cat="all">All Doctors</button>
+        <button type="button" class="doc-cat-btn" data-cat="cardiology">Cardiologists</button>
+        <button type="button" class="doc-cat-btn" data-cat="gynecology">Gynecologists</button>
+        <button type="button" class="doc-cat-btn" data-cat="orthopedics">Orthopedics</button>
+        <button type="button" class="doc-cat-btn" data-cat="pediatrics">Pediatricians</button>
+        <button type="button" class="doc-cat-btn" data-cat="neurology">Neurologists</button>
+        <button type="button" class="doc-cat-btn" data-cat="general">General Medicine</button>
+        <button type="button" class="doc-cat-btn" data-cat="ophthalmology">Eye Specialists</button>
+        <button type="button" class="doc-cat-btn" data-cat="oncology">Oncologists</button>
+        <button type="button" class="doc-cat-btn" data-cat="pulmonology">Pulmonologists</button>
+        <button type="button" class="doc-cat-btn" data-cat="dermatology">Dermatologists</button>
+      </div>
+
+      <!-- Doctors Grid -->
+      <div class="doctors-grid" id="doctorsGrid">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+    </div>
+
+    <!-- TAB 3: SWASTHYA AI HEALTH ASSISTANT -->
+    <div class="tab-pane" id="pane-ai-doctor-section">
+      <div class="ai-assistant-container">
+        <div class="ai-assistant-header">
+          <div class="ai-avatar-wrap">
+            <span class="ai-avatar-icon">🤖</span>
+            <span class="ai-pulse-dot"></span>
+          </div>
+          <div style="flex:1;">
+            <h2>Swasthya AI Health Assistant</h2>
+            <p>Gemini-powered health information, safety guidance &amp; Gwalior care directory</p>
+          </div>
+          <button type="button" class="btn btn-ghost btn-sm" onclick="openAiSettingsModal()" title="AI API Key &amp; Settings" style="white-space:nowrap;">
+            ⚙️ AI Settings
+          </button>
+        </div>
+
+        <div class="ai-disclaimer-note">
+          <span class="note-icon">ℹ️</span>
+          <span><strong>Health information only:</strong> AI cannot diagnose or replace a clinician. For severe or life-threatening symptoms, call 112 or ambulance 108 immediately.</span>
+        </div>
+
+        <!-- Chat Box -->
+        <div class="ai-chat-window" id="aiChatWindow">
+          <div class="chat-message ai-message">
+            <div class="chat-bubble">
+              <p><strong>Namaste! I am Swasthya</strong>, your health information guide for Gwalior.</p>
+                <p>Describe what you’re experiencing in Hindi, English or Hinglish. I can share general information and help you find local care, but I can’t diagnose or replace a clinician. If this may be an emergency, call 112 or ambulance 108 now.</p>
+            </div>
+            <span class="chat-time">Just now</span>
+          </div>
+        </div>
+
+        <!-- AI Quick Prompt Chips -->
+        <div class="ai-prompt-chips">
+          <span class="prompt-label">Common Symptoms:</span>
+          <button type="button" class="ai-chip" onclick="askAiPrompt('Mujhe kal raat se tez bukhar aur badan dard hai')">🔥 High Fever &amp; Chills</button>
+          <button type="button" class="ai-chip" onclick="askAiPrompt('Chest me heavy pain ho raha hai aur saans lene me dikkat ho rahi hai')">❤️ Chest Pain &amp; Breathlessness</button>
+          <button type="button" class="ai-chip" onclick="askAiPrompt('Ghutno me bahut dard hai aur chalne me dikkat hoti hai')">🦴 Severe Knee &amp; Joint Pain</button>
+          <button type="button" class="ai-chip" onclick="askAiPrompt('Pregnancy checkup ke liye lady doctor se consult karna hai')">🤰 Pregnancy &amp; Lady Doctor</button>
+          <button type="button" class="ai-chip" onclick="askAiPrompt('Chhote bachhe ko loose motions aur vomiting ho rahi hai')">👶 Baby Vomiting &amp; Diarrhea</button>
+          <button type="button" class="ai-chip" onclick="askAiPrompt('Aankho me jalan aur dhundhla dikh raha hai')">👁️ Eye Irritation &amp; Blurred Vision</button>
+        </div>
+
+        <!-- AI Input Row -->
+        <div class="ai-input-bar">
+          <input type="text" id="aiUserInput" maxlength="2000" placeholder="Describe what you’re experiencing in Hindi, Hinglish or English..." aria-label="Describe health symptoms">
+          <button type="button" class="btn btn-primary" id="aiSendBtn" onclick="handleAiSubmit()">
+            <span>Ask AI Doctor 🚀</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 4: BLOOD BANKS & LIVE INVENTORY -->
+    <div class="tab-pane" id="pane-blood-banks-section">
+      <div class="section-heading-bar">
+        <div>
+          <h2 class="section-title">🩸 Verified Blood Banks in Gwalior</h2>
+          <p class="section-sub">Live blood group inventory (A+, B+, O+, AB+, negative groups) &amp; 24x7 donor helplines.</p>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-outline-danger btn-sm" onclick="openDonorModal()" style="font-weight:700; border:1.5px solid #ef4444; color:#dc2626; background:#fff; padding:6px 14px; border-radius:8px; cursor:pointer;">
+            🩸 Become a Donor
+          </button>
+          <button type="button" class="btn btn-danger btn-sm" onclick="openBloodRequestModal()" style="font-weight:700; background:#dc2626; color:#fff; border:none; padding:6px 14px; border-radius:8px; cursor:pointer;">
+            📢 Request Urgent Blood
+          </button>
+        </div>
+      </div>
+      <div class="blood-group-filter-strip" id="bloodGroupFilterStrip" style="margin-bottom:14px;">
+        <button class="blood-filter-pill active" onclick="filterBloodInventory('all')">All Groups</button>
+        <button class="blood-filter-pill" onclick="filterBloodInventory('O+')">O+ Positive</button>
+        <button class="blood-filter-pill" onclick="filterBloodInventory('O-')">O- Negative</button>
+        <button class="blood-filter-pill" onclick="filterBloodInventory('B+')">B+ Positive</button>
+        <button class="blood-filter-pill" onclick="filterBloodInventory('A+')">A+ Positive</button>
+        <button class="blood-filter-pill" onclick="filterBloodInventory('AB+')">AB+ Positive</button>
+      </div>
+
+      <div class="blood-banks-grid" id="bloodBanksGrid">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+    </div>
+
+    <!-- TAB 5: 24x7 AMBULANCES DISPATCH -->
+    <div class="tab-pane" id="pane-ambulances-section">
+      <div class="section-heading-bar">
+        <div>
+          <h2 class="section-title">🚑 24x7 Emergency Ambulance Services</h2>
+          <p class="section-sub">Advanced Life Support (ALS), Cardiac ICU Ambulances, Basic Transport &amp; Janani Express.</p>
+        </div>
+        <button class="btn btn-danger" onclick="openEmergencySosModal()">
+          🚨 1-Click SOS Dispatch
+        </button>
+      </div>
+
+      <div class="ambulances-grid" id="ambulancesGrid">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+    </div>
+
+    <!-- TAB 6: MY APPOINTMENTS DASHBOARD -->
+    <div class="tab-pane" id="pane-my-appointments-section">
+      <div class="section-heading-bar">
+        <div>
+          <h2 class="section-title">📋 My Booked Appointments</h2>
+          <p class="section-sub">View digital OPD passes, download token slips, or reschedule consultations.</p>
+        </div>
+        <button type="button" class="btn btn-primary" onclick="openBookingModal()">
+          <span>+ Book New Appointment</span>
+        </button>
+      </div>
+
+      <div class="my-appointments-list" id="myAppointmentsList">
+        <!-- Rendered dynamically by script.js -->
+      </div>
+    </div>
+
+    <!-- TAB 7: ALGORITHM LAB (KD-Tree vs Quadtree) -->
+    <div class="tab-pane" id="pane-algoLab">
+      <section class="algo-lab-card" aria-label="Algorithm comparison">
+        <h2>Algorithm Lab: Brute Force vs. K-D Tree vs. Quadtree</h2>
+        <p class="muted">
+          Runs spatial queries with all three data structures on Gwalior hospitals. Every timing and node visit is measured live.
+        </p>
+
+        <div class="lab-controls">
+          <div class="field">
+            <label for="labMode">Query Type</label>
+            <select id="labMode">
+              <option value="radius">Radius search around my location</option>
+              <option value="nearest">Nearest K hospitals</option>
+              <option value="area">Range query: hospitals inside map rectangle</option>
+            </select>
+          </div>
+          <div class="field" data-lab="radius">
+            <label for="labRadius">Radius</label>
+            <select id="labRadius">
+              <option value="1">1 km</option>
+              <option value="2">2 km</option>
+              <option value="3" selected>3 km</option>
+              <option value="5">5 km</option>
+              <option value="10">10 km</option>
+            </select>
+          </div>
+          <div class="field" data-lab="nearest" hidden>
+            <label for="labK">K (Number of hospitals)</label>
+            <input type="number" id="labK" min="1" max="50" value="3">
+          </div>
+          <div class="field lab-area" data-lab="area" hidden>
+            <label>Map Area</label>
+            <div class="lab-area-buttons">
+              <button id="drawAreaBtn" class="btn btn-ghost btn-sm" type="button">Draw on Map</button>
+              <button id="viewAreaBtn" class="btn btn-ghost btn-sm" type="button">Use Visible Map</button>
+            </div>
+            <small id="areaInfo" class="muted">No area chosen yet.</small>
+          </div>
+          <button id="runCompare" class="btn btn-primary" type="button">Run Comparison</button>
+          <button id="clearCompare" class="btn btn-ghost" type="button">Clear Map</button>
+        </div>
+        <p id="labStatus" class="location-status" aria-live="polite"></p>
+        <div id="labResult"></div>
+
+        <h3>Scaling Test (Synthetic Points Benchmark)</h3>
+        <p class="muted">Generates synthetic benchmark points across Gwalior coordinates to evaluate theoretical scaling behaviour O(n) vs O(log n).</p>
+        <div class="lab-controls">
+          <div class="field">
+            <label for="benchN">Number of Points</label>
+            <select id="benchN">
+              <option value="1000">1,000 Points</option>
+              <option value="5000" selected>5,000 Points</option>
+              <option value="20000">20,000 Points</option>
+            </select>
+          </div>
+          <button id="runBench" class="btn btn-primary" type="button">Run Scaling Benchmark</button>
+        </div>
+        <div id="benchResult"></div>
+      </section>
+    </div>
+
+  </main>
+
+  <!-- ===== 6. AUTHENTICATION MODAL (LOGIN & SIGN UP GATE) ===== -->
+  <dialog id="authModal" class="auth-modal">
+    <div class="auth-modal-content">
+      <button type="button" class="modal-close-btn" onclick="closeAuthModal()" aria-label="Close dialog">&times;</button>
+      
+      <div class="auth-modal-header">
+        <div class="auth-brand-badge">+</div>
+        <h2>Welcome to Arogya Gwalior</h2>
+        <p>Sign in to book doctor appointments, track emergency beds, and manage patient history.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab-btn active" id="tabLoginBtn" onclick="switchAuthTab('login')">Sign In</button>
+        <button type="button" class="auth-tab-btn" id="tabSignupBtn" onclick="switchAuthTab('signup')">Create Account</button>
+      </div>
+
+      <!-- SIGN IN FORM -->
+      <form id="loginForm" class="auth-form" onsubmit="handleLoginSubmit(event)">
+        <div class="auth-field">
+          <label for="loginIdentifier">Mobile Number or Email</label>
+          <input type="text" id="loginIdentifier" placeholder="e.g. 9826012345 or user@example.com" required>
+        </div>
+
+        <div class="auth-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="Enter your password" required>
+        </div>
+
+        <div class="auth-options-row">
+          <label class="remember-label"><input type="checkbox" id="loginRemember" checked> Remember me</label>
+          <a href="#forgot" class="forgot-link" onclick="handleForgotPassword(event)">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Sign In to Continue</button>
+
+        <button type="button" class="btn btn-ghost btn-block btn-demo-login" onclick="quickDemoLogin()">
+          ⚡ Quick Guest / Demo Access
+        </button>
+      </form>
+
+      <!-- SIGN UP FORM -->
+      <form id="signupForm" class="auth-form" onsubmit="handleSignupSubmit(event)" hidden>
+        <div class="auth-field">
+          <label for="signupName">Full Name</label>
+          <input type="text" id="signupName" placeholder="e.g. Rahul Sharma" required>
+        </div>
+
+        <div class="auth-field">
+          <label for="signupPhone">Mobile Number (10 digits)</label>
+          <input type="tel" id="signupPhone" placeholder="e.g. 9826012345" pattern="[0-9]{10}" required>
+        </div>
+
+        <div class="auth-field">
+          <label for="signupEmail">Email Address (Optional)</label>
+          <input type="email" id="signupEmail" placeholder="e.g. rahul@example.com">
+        </div>
+
+        <div class="auth-field">
+          <label for="signupPassword">Create Password</label>
+          <input type="password" id="signupPassword" placeholder="At least 6 characters" minlength="4" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Create Free Account</button>
+      </form>
+
+      <div class="auth-modal-footer">
+        <button type="button" class="link-btn-guest" onclick="continueAsGuest()">
+          Skip for now &amp; Continue as Guest &rarr;
+        </button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== 7. ONLINE APPOINTMENT BOOKING MODAL ===== -->
+  <dialog id="bookingModal" class="booking-modal">
+    <div class="booking-modal-content">
+      <button type="button" class="modal-close-btn" onclick="closeBookingModal()" aria-label="Close dialog">&times;</button>
+      
+      <div class="booking-modal-header">
+        <span class="booking-badge">📅 Online Appointment</span>
+        <h2 id="bookingModalTitle">Book Doctor Appointment</h2>
+        <p>Book confirmed OPD or Video Consultation with top specialists in Gwalior.</p>
+      </div>
+
+      <form id="appointmentForm" class="booking-form" onsubmit="handleAppointmentSubmit(event)">
+        <div class="booking-row">
+          <div class="auth-field">
+            <label for="bookDoctorSelect">Select Specialist Doctor</label>
+            <select id="bookDoctorSelect" onchange="onDoctorSelectChange()">
+            </select>
+          </div>
+
+          <div class="auth-field">
+            <label for="bookHospitalSelect">Hospital / Clinic</label>
+            <select id="bookHospitalSelect" onchange="onHospitalSelectChange()">
+            </select>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label>Consultation Mode</label>
+          <div class="consultation-type-toggle">
+            <label class="type-pill">
+              <input type="radio" name="consultType" value="In-Clinic OPD" checked>
+              <span>🏥 In-Hospital OPD Visit</span>
+            </label>
+            <label class="type-pill">
+              <input type="radio" name="consultType" value="Video Consultation">
+              <span>📱 Video / Online Consult</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label>Select Appointment Date</label>
+          <div class="date-pills" id="bookingDatePills">
+          </div>
+          <input type="hidden" id="selectedBookingDate">
+        </div>
+
+        <div class="auth-field">
+          <label>Select Time Slot</label>
+          <div class="time-slots-grid" id="bookingTimeSlots">
+            <button type="button" class="slot-pill active" onclick="selectTimeSlot(this, '10:00 AM')">10:00 AM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '11:00 AM')">11:00 AM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '11:30 AM')">11:30 AM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '01:00 PM')">01:00 PM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '02:30 PM')">02:30 PM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '05:00 PM')">05:00 PM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '06:30 PM')">06:30 PM</button>
+            <button type="button" class="slot-pill" onclick="selectTimeSlot(this, '07:30 PM')">07:30 PM</button>
+          </div>
+          <input type="hidden" id="selectedTimeSlot" value="10:00 AM">
+        </div>
+
+        <div class="booking-section-subhead">Patient Details</div>
+        <div class="booking-row">
+          <div class="auth-field">
+            <label for="patientName">Patient Full Name</label>
+            <input type="text" id="patientName" placeholder="e.g. Sunita Devi" required>
+          </div>
+
+          <div class="auth-field">
+            <label for="patientPhone">Mobile Number (for SMS &amp; Token)</label>
+            <input type="tel" id="patientPhone" placeholder="e.g. 9826012345" required>
+          </div>
+        </div>
+
+        <div class="booking-row">
+          <div class="auth-field">
+            <label for="patientAge">Age (Years)</label>
+            <input type="number" id="patientAge" placeholder="e.g. 34" min="1" max="110" required>
+          </div>
+
+          <div class="auth-field">
+            <label for="patientGender">Gender</label>
+            <select id="patientGender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Child">Child</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="auth-field">
+          <label for="patientProblem">Symptoms or Reason for Visit</label>
+          <textarea id="patientProblem" rows="2" placeholder="Briefly describe symptoms (e.g. fever since 3 days, knee pain, chest tightness)..."></textarea>
+        </div>
+
+        <div class="fee-summary-card">
+          <div class="fee-row">
+            <span>Doctor Consultation Fee:</span>
+            <strong id="bookingFeeDisplay">₹500</strong>
+          </div>
+          <div class="fee-note">
+            <span>💳 Pay at hospital reception desk or online upon reporting. Zero advance fee required.</span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block btn-lg">
+          Confirm Appointment &amp; Generate Digital Pass &rarr;
+        </button>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ===== 8. APPOINTMENT CONFIRMATION SLIP MODAL ===== -->
+  <dialog id="confirmationSlipModal" class="slip-modal">
+    <div class="slip-modal-content">
+      <button type="button" class="modal-close-btn" onclick="closeSlipModal()" aria-label="Close dialog">&times;</button>
+      
+      <div class="slip-header">
+        <span class="slip-badge">✅ APPOINTMENT CONFIRMED</span>
+        <h2>Arogya Gwalior Digital OPD Pass</h2>
+        <p>Show this pass or Token ID at the hospital reception counter.</p>
+      </div>
+
+      <div class="slip-card" id="printableSlipArea">
+        <div class="slip-token-banner">
+          <span class="token-label">TOKEN NUMBER</span>
+          <h3 id="slipTokenId" class="token-value">GWL-APT-84920</h3>
+        </div>
+
+        <div class="slip-details-grid">
+          <div class="slip-cell">
+            <span class="slip-label">Patient Name:</span>
+            <strong id="slipPatientName">-</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Contact:</span>
+            <strong id="slipPatientPhone">-</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Doctor:</span>
+            <strong id="slipDoctorName">-</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Hospital / Centre:</span>
+            <strong id="slipHospitalName">-</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Date &amp; Time:</span>
+            <strong id="slipDateTime">-</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Consultation Mode:</span>
+            <strong id="slipConsultType">In-Clinic OPD</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Fee Payable:</span>
+            <strong id="slipFee">₹500</strong>
+          </div>
+          <div class="slip-cell">
+            <span class="slip-label">Status:</span>
+            <span class="status-confirmed-pill">Confirmed</span>
+          </div>
+        </div>
+
+        <div class="slip-instructions">
+          <h4>Reporting Instructions:</h4>
+          <ul>
+            <li>Please reach the hospital <strong>15 minutes prior</strong> to your scheduled slot.</li>
+            <li>Carry past medical reports, prescriptions, or discharge summaries if available.</li>
+            <li>In case of urgent emergency, proceed straight to the 24x7 Casualty / Emergency Room.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="slip-actions">
+        <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Print / Save Pass</button>
+        <button type="button" class="btn btn-ghost" onclick="closeSlipModal()">Done</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== 9. EMERGENCY SOS DISPATCH MODAL ===== -->
+  <dialog id="emergencySosModal" class="sos-modal">
+    <div class="sos-modal-content">
+      <button type="button" class="modal-close-btn" onclick="closeEmergencySosModal()">&times;</button>
+      <div class="sos-header">
+        <div class="sos-badge-icon">🚨</div>
+        <h2>Emergency SOS Dispatch</h2>
+        <p>1-Click Dispatch to Gwalior Central Emergency &amp; Ambulance Command Control</p>
+      </div>
+
+      <form id="sosForm" onsubmit="handleSosDispatch(event)">
+        <div class="auth-field">
+          <label for="sosCallerName">Caller / Patient Name</label>
+          <input type="text" id="sosCallerName" placeholder="Enter name" required>
+        </div>
+
+        <div class="auth-field">
+          <label for="sosCallerPhone">Contact Phone Number</label>
+          <input type="tel" id="sosCallerPhone" placeholder="Enter 10-digit mobile number" required>
+        </div>
+
+        <div class="auth-field">
+          <label for="sosEmergencyType">Emergency Nature</label>
+          <select id="sosEmergencyType">
+            <option value="Cardiac / Severe Chest Pain">Cardiac Emergency / Severe Chest Pain</option>
+            <option value="Road Accident / Severe Trauma">Road Accident / Polytrauma</option>
+            <option value="Stroke / Paralysis Symptoms">Stroke / Paralysis / Speech Loss</option>
+            <option value="Maternity / Labor Emergency">Maternity Emergency / Labor</option>
+            <option value="Severe Breathing Difficulty">Severe Hypoxia / Breathing Distress</option>
+            <option value="Other Critical Emergency">Other Critical Emergency</option>
+          </select>
+        </div>
+
+        <div class="sos-gps-notice">
+          <span>📍 GPS Location: <strong id="sosGpsDisplay">Capturing live coordinates...</strong></span>
+        </div>
+
+        <button type="submit" class="btn btn-danger btn-block btn-lg" style="margin-top:14px; font-weight:800; font-size:1.05rem;">
+          🚨 DISPATCH AMBULANCE NOW
+        </button>
+
+        <div style="display:flex; justify-content:center; gap:14px; margin-top:14px;">
+          <a href="tel:108" class="btn btn-ghost btn-sm" style="color:#b91c1c; font-weight:800;">📞 Call 108 Directly</a>
+          <a href="tel:07512403222" class="btn btn-ghost btn-sm" style="color:#1d4ed8; font-weight:800;">📞 Call JAH Trauma</a>
+        </div>
+      </form>
+    </div>
+  </dialog>
+<!-- ===== 9B. EMERGENCY DISPATCH LIVE TRACKER MODAL ===== -->
+  <dialog id="emergencyDispatchModal" class="emergency-dispatch-modal">
+    <div class="dispatch-modal-content">
+      <button type="button" class="modal-close-btn" onclick="closeEmergencyDispatchModal()">&times;</button>
+      <div class="dispatch-siren-header">
+        <span class="dispatch-siren-badge">🚨 AMBULANCE DISPATCHED &bull; LIVE</span>
+        <h2 id="dispatchTitle">Emergency Response Unit En Route</h2>
+        <p>Gwalior 108 Emergency Command has dispatched an Advanced Cardiac Life Support Ambulance to your live coordinates.</p>
+      </div>
+
+      <div class="dispatch-tracker-card">
+        <div class="dispatch-token-row">
+          <span>DISPATCH TOKEN</span>
+          <strong id="dispatchCodeDisplay">SOS-GWL-XXXX</strong>
+        </div>
+
+        <div class="dispatch-eta-box">
+          <div class="dispatch-countdown-val" id="dispatchCountdown">06:45</div>
+          <div class="dispatch-countdown-lbl">Estimated Arrival (ETA) to your coordinates</div>
+        </div>
+
+        <div class="dispatch-info-grid">
+          <div>
+            <span class="disp-lbl">Assigned Unit:</span>
+            <strong>108 Advanced Cardiac Ambulance (JAH Unit #12)</strong>
+          </div>
+          <div>
+            <span class="disp-lbl">Base Hub:</span>
+            <strong>JAH Level-1 Trauma Centre, Kampoo</strong>
+          </div>
+          <div>
+            <span class="disp-lbl">Caller / Patient:</span>
+            <strong id="dispatchCallerDisplay">Emergency Caller</strong>
+          </div>
+          <div>
+            <span class="disp-lbl">GPS Coordinates:</span>
+            <strong id="dispatchCoordsDisplay">26.2183° N, 78.1828° E</strong>
+          </div>
+        </div>
+
+        <div class="dispatch-actions">
+          <a href="tel:108" class="btn btn-emergency-call">
+            📞 Call Ambulance Driver (108)
+          </a>
+          <button type="button" class="btn btn-ghost" onclick="closeEmergencyDispatchModal()">
+            Keep Tracking
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== 10. MAP API KEY & CONFIGURATION MODAL ===== -->
+  <dialog id="mapSettingsModal" class="map-settings-modal">
+    <div class="map-settings-content">
+      <button type="button" class="modal-close-btn" onclick="closeMapSettingsModal()">&times;</button>
+      <div class="map-settings-header">
+        <span class="settings-badge">🗺️ GIS &amp; Cartography</span>
+        <h2>Map Settings</h2>
+        <p>Choose a map style. Esri and OpenStreetMap styles work without an API key.</p>
+      </div>
+
+      <div class="auth-field" style="margin-bottom:14px;">
+        <label for="customMapboxKeyInput">Mapbox public access token</label>
+        <input type="text" id="customMapboxKeyInput" placeholder="pk.eyJ1Ijoi..." style="font-family:monospace; font-size:0.84rem;">
+        <small style="color:var(--slate-500); margin-top:4px;">Mapbox tokens are visible in the browser. Use a public token restricted to your website domain. Without one, the map uses keyless Esri street and satellite styles.</small>
+      </div>
+
+      <div class="auth-field" style="margin-bottom:18px;">
+        <label>Select Active Map Tile Layer</label>
+        <div class="map-theme-grid">
+          <label class="map-theme-card">
+            <input type="radio" name="mapTileChoice" value="arcgisStreets" checked onchange="changeMapLayer('arcgisStreets')">
+            <div>
+              <strong>Esri World Street Map</strong>
+              <p>Detailed streets and place labels</p>
+            </div>
+          </label>
+          <label class="map-theme-card">
+            <input type="radio" name="mapTileChoice" value="arcgisSatellite" onchange="changeMapLayer('arcgisSatellite')">
+            <div>
+              <strong>Esri World Imagery</strong>
+              <p>Satellite imagery for surrounding areas</p>
+            </div>
+          </label>
+          <label class="map-theme-card">
+            <input type="radio" name="mapTileChoice" value="mapboxStreets" onchange="changeMapLayer('mapboxStreets')">
+            <div>
+              <strong>Mapbox HD Streets</strong>
+              <p>Vector road styling with Mapbox Key</p>
+            </div>
+          </label>
+          <label class="map-theme-card">
+            <input type="radio" name="mapTileChoice" value="mapboxSatellite" onchange="changeMapLayer('mapboxSatellite')">
+            <div>
+              <strong>Satellite Hybrid Earth</strong>
+              <p>Photorealistic satellite imagery</p>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn btn-primary" onclick="saveMapboxKey()">Save &amp; Apply</button>
+        <button type="button" class="btn btn-ghost" onclick="closeMapSettingsModal()">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- ===== 11. HOSPITAL DETAILS DIALOG ===== -->
+  <dialog id="detailDialog" class="detail-dialog" aria-labelledby="detailTitle">
+    <div id="detailBody"></div>
+  </dialog>
+
+  <!-- ===== 11B. FAST SIDE DIRECTION DRAWER (SLIDES IN FROM RIGHT ON "GET DIRECTIONS") ===== -->
+  <aside id="sideDirectionDrawer" class="side-direction-drawer" aria-label="Live Road Directions &amp; Navigation" aria-hidden="true">
+    <div class="side-drawer-backdrop" onclick="closeSideDirectionDrawer()"></div>
+    <div class="side-drawer-content">
+      <div class="side-drawer-header">
+        <div class="side-drawer-title-wrap">
+          <span class="drawer-badge">🚗 Live Road Navigation</span>
+          <h3 id="drawerHospitalName">Hospital Directions</h3>
+          <p id="drawerHospitalAddress">Gwalior, Madhya Pradesh</p>
+        </div>
+        <button type="button" class="drawer-close-btn" onclick="closeSideDirectionDrawer()" aria-label="Close directions">&times;</button>
+      </div>
+
+      <!-- Live Route Metrics -->
+      <div class="drawer-metrics-bar">
+        <div class="metric-box">
+          <span class="metric-label">Estimated Distance</span>
+          <span class="metric-value" id="drawerDistance">-- km</span>
+        </div>
+        <div class="metric-box highlight">
+          <span class="metric-label">Driving Time ETA</span>
+          <span class="metric-value" id="drawerEta">-- mins</span>
+        </div>
+        <div class="metric-box">
+          <span class="metric-label">Route Status</span>
+          <span class="metric-value text-green" id="drawerTraffic">Fastest Route</span>
+        </div>
+      </div>
+
+      <!-- Live Map inside Side Drawer -->
+      <div class="drawer-map-container">
+        <div id="drawerMap" class="drawer-map"></div>
+        <div id="drawerMapLoader" class="drawer-map-loader">
+          <div class="spinner"></div>
+          <span>Drawing live driving route in Gwalior...</span>
+        </div>
+      </div>
+
+      <!-- Navigation & Action Buttons -->
+      <div class="drawer-action-row">
+        <a id="drawerGmapsBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-block">
+          🧭 Start Navigation in Google Maps
+        </a>
+        <button type="button" class="btn btn-outline-nav btn-block" onclick="viewRouteOnMainMap()">
+          🗺️ View &amp; Track on Main Split Map
+        </button>
+        <a id="drawerCallBtn" href="tel:108" class="btn btn-danger btn-block">
+          📞 Call Hospital Casualty (Emergency)
+        </a>
+        <button type="button" id="drawerBookBtn" class="btn btn-book-card btn-block" onclick="handleDrawerBook()">
+          📅 Book OPD Consultation at this Hospital
+        </button>
+      </div>
+
+      <div class="drawer-instructions-box">
+        <h4>🧭 Turn-by-turn directions</h4>
+        <p id="drawerRouteNote" class="drawer-route-note" role="status" aria-live="polite">Calculating road directions…</p>
+        <ol id="drawerStepsList" class="drawer-steps-list"></ol>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== 11C. SWASTHYA AI API SETTINGS MODAL ===== -->
+  <dialog id="aiSettingsModal" class="auth-modal">
+    <div class="auth-modal-content" style="max-width:540px;">
+      <button type="button" class="modal-close-btn" onclick="closeAiSettingsModal()">&times;</button>
+      <div class="auth-modal-header">
+        <span class="auth-brand-badge">🤖 Swasthya AI Engine</span>
+        <h2>Gemini AI Connection</h2>
+        <p>Gemini requests run through the backend. Your API key is never stored in this browser.</p>
+      </div>
+      <div id="aiApiStatus" class="ai-api-status" role="status" aria-live="polite">
+        Checking secure server configuration...
+      </div>
+      <div style="display:flex; justify-content:flex-end; gap:8px;">
+        <button type="button" class="btn btn-ghost" onclick="closeAiSettingsModal()">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- RESCHEDULE APPOINTMENT MODAL -->
+  <dialog id="rescheduleModal" class="modal-dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-icon" style="background:#e0f2fe; color:#0284c7;">🔄</span>
+          <div>
+            <h3>Reschedule Appointment</h3>
+            <p id="rescheduleSubtitle" class="modal-sub">Choose a new date &amp; time slot for your consultation.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeRescheduleModal()">&times;</button>
+      </div>
+      <form id="rescheduleForm" onsubmit="handleRescheduleSubmit(event)">
+        <input type="hidden" id="rescheduleTokenId">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rescheduleDate">New Appointment Date</label>
+            <input type="date" id="rescheduleDate" required>
+          </div>
+          <div class="form-group">
+            <label for="rescheduleSlot">New Time Slot</label>
+            <select id="rescheduleSlot" required>
+              <option value="09:30 AM - 10:00 AM">09:30 AM - 10:00 AM</option>
+              <option value="10:00 AM - 10:30 AM">10:00 AM - 10:30 AM</option>
+              <option value="10:30 AM - 11:00 AM">10:30 AM - 11:00 AM</option>
+              <option value="11:30 AM - 12:00 PM">11:30 AM - 12:00 PM</option>
+              <option value="12:00 PM - 12:30 PM">12:00 PM - 12:30 PM</option>
+              <option value="04:30 PM - 05:00 PM">04:30 PM - 05:00 PM</option>
+              <option value="05:00 PM - 05:30 PM">05:00 PM - 05:30 PM</option>
+              <option value="06:00 PM - 06:30 PM">06:00 PM - 06:30 PM</option>
+              <option value="07:00 PM - 07:30 PM">07:00 PM - 07:30 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top:16px; display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn btn-ghost" onclick="closeRescheduleModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="rescheduleSubmitBtn">Confirm New Slot</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- BECOME A BLOOD DONOR MODAL -->
+  <dialog id="donorModal" class="modal-dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-icon" style="background:#fee2e2; color:#dc2626;">🩸</span>
+          <div>
+            <h3>Become a Blood Donor in Gwalior</h3>
+            <p class="modal-sub">Register in the Gwalior emergency donor database to save lives.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeDonorModal()">&times;</button>
+      </div>
+      <form id="donorForm" onsubmit="handleDonorSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="donorName">Full Name *</label>
+            <input type="text" id="donorName" placeholder="e.g. Rahul Sharma" required>
+          </div>
+          <div class="form-group">
+            <label for="donorPhone">Mobile Phone (WhatsApp) *</label>
+            <input type="tel" id="donorPhone" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="donorBloodGroup">Blood Group *</label>
+            <select id="donorBloodGroup" required>
+              <option value="">Select Blood Group</option>
+              <option value="A+">A+ (A Positive)</option>
+              <option value="A-">A- (A Negative)</option>
+              <option value="B+">B+ (B Positive)</option>
+              <option value="B-">B- (B Negative)</option>
+              <option value="AB+">AB+ (AB Positive)</option>
+              <option value="AB-">AB- (AB Negative)</option>
+              <option value="O+">O+ (O Positive)</option>
+              <option value="O-">O- (O Negative)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="donorAge">Age (18 - 65) *</label>
+            <input type="number" id="donorAge" min="18" max="65" value="25" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="donorCity">Area / Colony in Gwalior</label>
+          <input type="text" id="donorCity" placeholder="e.g. Lashkar, Morar, Thatipur, City Centre" value="Gwalior">
+        </div>
+        <div class="modal-footer" style="margin-top:16px; display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn btn-ghost" onclick="closeDonorModal()">Cancel</button>
+          <button type="submit" class="btn btn-danger" id="donorSubmitBtn">Register as Donor</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- URGENT BLOOD REQUEST MODAL -->
+  <dialog id="bloodRequestModal" class="modal-dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-badge-icon" style="background:#fee2e2; color:#dc2626;">📢</span>
+          <div>
+            <h3>Broadcast Urgent Blood Request</h3>
+            <p class="modal-sub">Broadcast an immediate blood requirement across Gwalior blood banks.</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close" onclick="closeBloodRequestModal()">&times;</button>
+      </div>
+      <form id="bloodRequestForm" onsubmit="handleBloodRequestSubmit(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reqPatientName">Patient Full Name *</label>
+            <input type="text" id="reqPatientName" placeholder="Patient receiving blood" required>
+          </div>
+          <div class="form-group">
+            <label for="reqBloodGroup">Required Blood Group *</label>
+            <select id="reqBloodGroup" required>
+              <option value="">Select Blood Group</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reqUnits">Units Needed *</label>
+            <input type="number" id="reqUnits" min="1" max="10" value="1" required>
+          </div>
+          <div class="form-group">
+            <label for="reqUrgency">Urgency Level</label>
+            <select id="reqUrgency">
+              <option value="Immediate Emergency">🚨 Immediate Emergency (&lt; 2 hrs)</option>
+              <option value="Same Day Urgent" selected>⚠️ Same Day Urgent</option>
+              <option value="Scheduled Surgery">🗓️ Scheduled Surgery (Within 48 hrs)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reqHospital">Hospital in Gwalior *</label>
+            <input type="text" id="reqHospital" placeholder="e.g. J.A. Hospital / BIMR Hospital" required>
+          </div>
+          <div class="form-group">
+            <label for="reqContact">Attendant Contact Mobile *</label>
+            <input type="tel" id="reqContact" placeholder="10-digit mobile number" required pattern="[0-9]{10}">
+          </div>
+        </div>
+        <div class="modal-footer" style="margin-top:16px; display:flex; justify-content:flex-end; gap:10px;">
+          <button type="button" class="btn btn-ghost" onclick="closeBloodRequestModal()">Cancel</button>
+          <button type="submit" class="btn btn-danger" id="reqSubmitBtn">Broadcast Blood Request</button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- ===== 12. FLOATING EMERGENCY SOS & AI DOCTOR WIDGETS ===== -->
+  <div class="floating-sos-btn" id="floatingSosBtn" onclick="openEmergencySosModal()" title="1-Click Emergency SOS Ambulance Dispatch">
+    <div class="sos-icon-wrap">🚨</div>
+    <div class="sos-text">EMERGENCY SOS</div>
+    <span class="sos-pulse-wave"></span>
+  </div>
+
+  <div class="floating-ai-widget" id="floatingAiWidget" onclick="switchMainTab('ai-doctor-section')">
+    <div class="floating-ai-bubble">
+      <span class="ai-sparkle">✨</span>
+      <span>Talk to AI Health Agent</span>
+    </div>
+    <div class="floating-ai-btn">
+      <span>🤖</span>
+      <span class="pulse-beacon"></span>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <!-- ===== 13. SITE FOOTER ===== -->
+  <footer id="about" class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="footer-brand">
+          <span class="brand-mark">+</span>
+          <h3>Arogya Gwalior</h3>
+        </div>
+        <p>Enterprise healthcare network connecting citizens of Gwalior with verified emergency hospitals, leading specialist doctors, live bed &amp; blood inventory, and AI symptom triage.</p>
+        <div class="footer-emergency-highlight">
+          <strong>24x7 Ambulance: 108 &bull; Emergency: 112 &bull; JAH Trauma: 0751-2403222</strong>
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Key Hospital Networks</h4>
+        <ul>
+          <li>Jaya Arogya Hospital (JAH Group &amp; GRMC)</li>
+          <li>Birla Institute of Medical Research (BIMR)</li>
+          <li>Cancer Hospital &amp; Research Institute (CHRI)</li>
+          <li>Apollo Clinic &amp; Diagnostic Centre Gwalior</li>
+          <li>Civil Hospital Morar &amp; Hazira Civil Hospital</li>
+          <li>Kamla Raja Hospital (KRH Maternity &amp; Child)</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Medical Specialties</h4>
+        <ul>
+          <li>24x7 Trauma &amp; Emergency Care</li>
+          <li>Interventional Cardiology &amp; Cath Lab</li>
+          <li>Orthopedics &amp; Joint Replacement</li>
+          <li>Obstetrics, Gynecology &amp; NICU</li>
+          <li>Oncology &amp; Radiation Therapy</li>
+          <li>Neurology &amp; Advanced Spine Care</li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Technology &amp; Standards</h4>
+        <p>Powered by Leaflet GIS, Esri and Mapbox map tiles, OpenStreetMap data, OSRM routing, and spatial search algorithms.</p>
+        <p class="copyright">&copy; 2026 Arogya Gwalior Project. Designed for patient welfare &amp; rapid emergency response.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts: Config, Leaflet JS, and Enterprise application code -->
+  <script src="config.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="hospitals-data.js"></script>
+  <script src="script.js?v=v4-sticky-perfect"></script>
+  <script src="lab.js"></script>
+</body>
+</html>
