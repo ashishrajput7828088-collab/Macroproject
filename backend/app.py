@@ -3,6 +3,14 @@ Production-Grade Flask Backend with Spatial DSA Indexing (KD-Tree & Quadtree),
 Online Appointment Booking Engine, Real-time Blood Bank & Ambulance Tracking,
 Clinical AI Triage Assistant, and Mapbox GIS Integration.
 """
+import sys
+from pathlib import Path
+
+# Ensure backend directory is in sys.path so internal imports work regardless of entrypoint (Vercel, Gunicorn, etc.)
+_backend_dir = Path(__file__).resolve().parent
+if str(_backend_dir) not in sys.path:
+    sys.path.insert(0, str(_backend_dir))
+
 import json
 import math
 import os
@@ -44,10 +52,13 @@ def session_secret():
         existing = SECRET_KEY_PATH.read_text(encoding="utf-8").strip()
         if existing:
             return existing
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         pass
     value = secrets.token_urlsafe(48)
-    SECRET_KEY_PATH.write_text(value, encoding="utf-8")
+    try:
+        SECRET_KEY_PATH.write_text(value, encoding="utf-8")
+    except OSError:
+        pass
     return value
 
 

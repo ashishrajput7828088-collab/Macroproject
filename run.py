@@ -11,9 +11,8 @@ BASE_DIR = Path(__file__).resolve().parent
 BACKEND_DIR = BASE_DIR / "backend"
 sys.path.insert(0, str(BACKEND_DIR))
 
-from app import app
-
 if __name__ == "__main__":
+    from app import app
     host = os.environ.get("HOST", "0.0.0.0")
     port = int(os.environ.get("PORT", 5000))
     print(f"\n=======================================================")

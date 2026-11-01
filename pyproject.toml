@@ -1,0 +1,15 @@
+[project]
+name = "macroproject"
+version = "3.0.0"
+description = "Arogya Gwalior - Healthcare & Emergency Facility Finder"
+requires-python = ">=3.9"
+dependencies = [
+    "flask>=3.0.0",
+    "flask-cors>=4.0.0",
+    "python-dotenv>=1.0.0",
+    "werkzeug>=3.0.0",
+    "gunicorn>=21.2.0",
+]
+
+[tool.vercel]
+entrypoint = "backend.app:app"

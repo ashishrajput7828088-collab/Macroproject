@@ -86,8 +86,11 @@ class APIValidationTests(unittest.TestCase):
     def test_appointment_duplicate_and_reschedule(self):
         import secrets
         uid = secrets.token_hex(4)
-        date1 = f"2029-01-{secrets.randbelow(25)+1:02d}"
-        date2 = f"2029-02-{secrets.randbelow(25)+1:02d}"
+        rand_day1 = secrets.randbelow(20) + 1
+        rand_day2 = secrets.randbelow(20) + 1
+        rand_year = 2030 + secrets.randbelow(50)
+        date1 = f"{rand_year}-01-{rand_day1:02d}"
+        date2 = f"{rand_year}-02-{rand_day2:02d}"
         payload = {
             "patientName": f"Test Patient {uid}",
             "patientPhone": "9876543210",
@@ -100,17 +103,20 @@ class APIValidationTests(unittest.TestCase):
         self.assertEqual(res1.status_code, 200)
         token_id = res1.get_json()["appointment"]["tokenId"]
 
-        # Duplicate should return 409
-        res_dup = self.client.post("/api/appointments", json=payload)
-        self.assertEqual(res_dup.status_code, 409)
+        try:
+            # Duplicate should return 409
+            res_dup = self.client.post("/api/appointments", json=payload)
+            self.assertEqual(res_dup.status_code, 409)
 
-        # Reschedule to free slot
-        res_resched = self.client.patch(f"/api/appointments/{token_id}/reschedule", json={
-            "appointmentDate": date2,
-            "timeSlot": "04:00 PM"
-        })
-        self.assertEqual(res_resched.status_code, 200)
-        self.assertTrue(res_resched.get_json()["ok"])
+            # Reschedule to free slot
+            res_resched = self.client.patch(f"/api/appointments/{token_id}/reschedule", json={
+                "appointmentDate": date2,
+                "timeSlot": "04:00 PM"
+            })
+            self.assertEqual(res_resched.status_code, 200)
+            self.assertTrue(res_resched.get_json()["ok"])
+        finally:
+            self.client.delete(f"/api/appointments/{token_id}")
 
     def test_blood_donor_and_request_apis(self):
         donor_res = self.client.post("/api/blood-banks/donate", json={

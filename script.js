@@ -14,10 +14,12 @@
 
 /* ---------- 1. SETTINGS & CONFIGURATION ---------- */
 const GWALIOR_CENTER = { lat: 26.2183, lng: 78.1828 };
-const IS_STATIC_HOSTING = location.protocol === "https:" && !location.port && !location.hostname.includes("localhost") && !location.hostname.includes("127.0.0.1");
-const API_BASE_URL = location.port === "5000" ? "" : (IS_STATIC_HOSTING ? "" : "http://127.0.0.1:5000");
+const IS_VERCEL = location.hostname.endsWith(".vercel.app") || location.hostname === "vercel.app";
+const IS_GITHUB_PAGES = location.hostname.endsWith(".github.io");
+const IS_SAME_ORIGIN = location.port === "5000" || IS_VERCEL || (!IS_GITHUB_PAGES && location.protocol === "https:");
+const API_BASE_URL = IS_SAME_ORIGIN ? "" : (IS_GITHUB_PAGES ? "" : "http://127.0.0.1:5000");
 const API_URL = API_BASE_URL; // alias for lab.js
-const USE_BACKEND = !IS_STATIC_HOSTING;
+const USE_BACKEND = !IS_GITHUB_PAGES;
 const ROUTING_URL = "https://router.project-osrm.org/route/v1/driving";
 
 const FAV_KEY = "arogyaGwaliorFavourites";
@@ -278,7 +280,7 @@ function openAuthModal(tab = "login") {
   if (typeof modal.showModal === "function") modal.showModal();
   else modal.setAttribute("open", "");
   setTimeout(() => {
-    if (tab === "signup") el("regName")?.focus();
+    if (tab === "signup") (el("signupName") || el("regName"))?.focus();
     else el("loginIdentifier")?.focus();
   }, 150);
 }
