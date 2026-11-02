@@ -42,15 +42,36 @@ const SHORT_LABELS = { icu: "ICU", oxygen: "Oxygen", ventilator: "Ventilator", e
 const ALGO_NAMES = { kdtree: "K-D Tree", quadtree: "Quadtree", linear: "Brute force" };
 
 const PRESET_AREAS = [
-  ["City Centre, Gwalior", 26.2198, 78.2045],
-  ["Lashkar / Kampoo", 26.1985, 78.1634],
-  ["Morar Cantt", 26.2268, 78.2295],
-  ["Thatipur", 26.2115, 78.2098],
-  ["Hazira / Tansen Road", 26.2285, 78.1788],
-  ["Phoolbagh Chowk", 26.2088, 78.1745],
-  ["Cancer Hills / Mandre Ki Mata", 26.1912, 78.1568],
-  ["Gole Ka Mandir", 26.2020, 78.1930],
-  ["Maharajpura", 26.2700, 78.2250]
+  ["City Centre (Collectorate / SP Office)", 26.2198, 78.2045],
+  ["Thatipur (Mayur Nagar / Gandhi Road)", 26.2115, 78.2098],
+  ["Morar Cantt (Baradari / Pinto Park)", 26.2268, 78.2295],
+  ["Lashkar (Jayendra Ganj / Maharaj Bada)", 26.1985, 78.1634],
+  ["Kampoo (JAH Medical Campus / KRG)", 26.1960, 78.1600],
+  ["Hazira (Tansen Road / Birla Nagar)", 26.2285, 78.1788],
+  ["Phoolbagh (Padav / Gwalior Railway Station)", 26.2155, 78.1830],
+  ["Gole Ka Mandir (DD Nagar / Surya Mandir)", 26.2420, 78.2120],
+  ["Maharajpura (Gwalior Airport / IIITM)", 26.2550, 78.1750],
+  ["Bahodapur (Anand Nagar / Motijheel)", 26.2250, 78.1480],
+  ["Madhav Ganj (Daulat Ganj / Roxy)", 26.1940, 78.1690],
+  ["Govindpuri (Suresh Nagar / Sachin Marg)", 26.2140, 78.2010],
+  ["Cancer Hills (Mandre Ki Mata)", 26.1912, 78.1568]
+];
+
+const GWALIOR_LOCALITIES = [
+  { name: "City Centre", lat: 26.2198, lng: 78.2045, keywords: ["city centre", "city center", "sp office", "patel nagar", "collectorate", "railway colony", "balwant nagar"] },
+  { name: "Thatipur", lat: 26.2115, lng: 78.2098, keywords: ["thatipur", "mayur nagar", "gandhi nagar", "darpan colony", "madhav nagar"] },
+  { name: "Morar", lat: 26.2268, lng: 78.2295, keywords: ["morar", "cantt", "pinto park", "baradari", "morar cantt", "singhpur road", "hurawali"] },
+  { name: "Lashkar", lat: 26.1985, lng: 78.1634, keywords: ["lashkar", "jayendra ganj", "naya bazaar", "bada", "maharaj bada", "sarrafa", "daulatganj"] },
+  { name: "Kampoo / JAH", lat: 26.1960, lng: 78.1600, keywords: ["kampoo", "jah", "jayarogya", "madhav dispensary", "kamla raja", "medical college", "gmc"] },
+  { name: "Hazira", lat: 26.2285, lng: 78.1788, keywords: ["hazira", "tansen road", "birla nagar", "hazira chouraha", "line number 1"] },
+  { name: "Phoolbagh / Padav", lat: 26.2155, lng: 78.1830, keywords: ["phoolbagh", "phool bagh", "padav", "railway station", "gwalior station", "bus stand"] },
+  { name: "Gole Ka Mandir", lat: 26.2420, lng: 78.2120, keywords: ["gole ka mandir", "dd nagar", "deen dayal nagar", "surya mandir", "bhagwan birsa munda"] },
+  { name: "Maharajpura / Airport", lat: 26.2550, lng: 78.1750, keywords: ["maharajpura", "airport", "airforce", "iiitm", "rajmata vijayaraje", "mits"] },
+  { name: "Bahodapur", lat: 26.2250, lng: 78.1480, keywords: ["bahodapur", "anand nagar", "motijheel", "vinay nagar", "transport nagar"] },
+  { name: "Madhav Ganj", lat: 26.1940, lng: 78.1690, keywords: ["madhav ganj", "roxy", "shinde ki chhavani", "ram mandir"] },
+  { name: "Cancer Hills", lat: 26.1912, lng: 78.1568, keywords: ["cancer hills", "mandre ki mata", "cancer hospital"] },
+  { name: "Govindpuri", lat: 26.2140, lng: 78.2010, keywords: ["govindpuri", "suresh nagar", "chhatri mandi", "mahalgaon"] },
+  { name: "Alkapuri", lat: 26.2080, lng: 78.2020, keywords: ["alkapuri", "sachin tendulkar marg", "university road", "jiwaji university"] }
 ];
 
 /* Helper to get element by id */
@@ -851,8 +872,7 @@ function initMap() {
 
   // Floating map tools
   el("mapLocateBtn")?.addEventListener("click", () => {
-    useMyLocation();
-    if (map) map.flyTo([userPoint.lat, userPoint.lng], 14, { duration: 1.2 });
+    useMyLocation(true);
   });
 
   el("mapResetBtn")?.addEventListener("click", () => {
@@ -1026,7 +1046,7 @@ function saveMapboxKey() {
   changeMapLayer(selectedStyle);
 }
 
-function updateUserMarker() {
+function updateUserMarker(accuracyRadius = 100) {
   if (!MAP_ENABLED || !map) return;
   if (userMarker) map.removeLayer(userMarker);
   if (window._userAccuracyCircle) {
@@ -1037,7 +1057,7 @@ function updateUserMarker() {
   const userIcon = L.divIcon({
     className: "custom-user-marker",
     html: `
-      <div class="user-gps-pulse-wrap">
+      <div class="user-gps-pulse-wrap" title="Your Live Location Pin">
         <div class="user-gps-radar-ring"></div>
         <div class="user-gps-core-dot"></div>
       </div>
@@ -1047,11 +1067,19 @@ function updateUserMarker() {
   });
 
   userMarker = L.marker([userPoint.lat, userPoint.lng], { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
-  userMarker.bindPopup("<b>📍 Your Detected Location</b><br>Fast GPS spatial distance calculated from here.");
+  
+  const locationLabel = userPoint.source ? `Live Location (${userPoint.source})` : "Your Live Location";
+  userMarker.bindPopup(`
+    <div style="font-family:sans-serif; min-width:180px;">
+      <div style="font-size:0.88rem; font-weight:800; color:#0f172a; margin-bottom:4px;">📍 ${locationLabel}</div>
+      <div style="font-size:0.8rem; color:#475569; margin-bottom:4px;">GPS: ${userPoint.lat.toFixed(5)}° N, ${userPoint.lng.toFixed(5)}° E</div>
+      <div style="font-size:0.78rem; color:#0d9488; font-weight:700;">Hospitals sorted by distance from here</div>
+    </div>
+  `);
 
   if (userPoint.accurate) {
     window._userAccuracyCircle = L.circle([userPoint.lat, userPoint.lng], {
-      radius: 180,
+      radius: Math.max(40, Math.min(accuracyRadius || 100, 600)),
       color: "#0284c7",
       fillColor: "#38bdf8",
       fillOpacity: 0.12,
@@ -1344,6 +1372,9 @@ function renderRouteSteps(steps, isAccurateStart) {
 }
 
 function getNavigationUrl(destLat, destLng) {
+  if (userPoint && typeof userPoint.lat === "number" && typeof userPoint.lng === "number") {
+    return `https://www.google.com/maps/dir/?api=1&origin=${userPoint.lat},${userPoint.lng}&destination=${destLat},${destLng}&travelmode=driving&dir_action=navigate`;
+  }
   return `https://www.google.com/maps/dir/?api=1&destination=${destLat},${destLng}&travelmode=driving&dir_action=navigate`;
 }
 
@@ -3313,56 +3344,130 @@ function showToast(msg) {
 
 let isLocating = false;
 
-function useMyLocation() {
+async function useMyLocation(flyDirectlyToUser = true) {
   if (isLocating) return;
   isLocating = true;
 
+  const locBtn = el("locateBtn");
+  const origBtnContent = locBtn ? locBtn.innerHTML : "";
+  if (locBtn) {
+    locBtn.innerHTML = `<span>⏳ Acquiring GPS…</span>`;
+    locBtn.disabled = true;
+  }
+
   const locStatus = el("locationStatus");
   if (locStatus) {
-    locStatus.innerHTML = `<span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#0d9488; margin-right:6px; animation:gpsPulse 1s infinite;"></span> Locating you in Gwalior (Ultra-Fast GPS)...`;
+    locStatus.innerHTML = `<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#0d9488; margin-right:6px; animation:gpsPulse 1s infinite;"></span> Requesting device GPS location (please click 'Allow' if prompted)…`;
   }
-  showToast("🛰️ Acquiring your location in Gwalior...");
+  showToast("🛰️ Acquiring live GPS location… Please grant location permission in browser.");
+
+  const resetBtnState = () => {
+    isLocating = false;
+    if (locBtn) {
+      locBtn.innerHTML = origBtnContent || `<span>🎯 Use My Location</span>`;
+      locBtn.disabled = false;
+    }
+  };
+
+  const onLocationSuccess = (lat, lng, accuracy = 25, sourceName = "Satellite GPS") => {
+    resetBtnState();
+    handleLocationFound(lat, lng, true, sourceName, accuracy, flyDirectlyToUser);
+    showToast(`✅ Live Location Acquired (±${Math.round(accuracy)}m accuracy)!`);
+  };
+
+  const onLocationFailure = async (reason) => {
+    console.warn("Device GPS unavailable:", reason);
+    
+    // Attempt IP-based approximate location before falling back
+    if (locStatus) {
+      locStatus.innerHTML = `<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:#f59e0b; margin-right:6px;"></span> Trying network IP location…`;
+    }
+    
+    try {
+      const res = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4500) });
+      if (res.ok) {
+        const data = await res.json();
+        if (data && typeof data.latitude === "number" && typeof data.longitude === "number") {
+          const isGwaliorOrNear = distanceKm({ lat: data.latitude, lng: data.longitude }, GWALIOR_CENTER) <= 120;
+          const lat = isGwaliorOrNear ? data.latitude : GWALIOR_CENTER.lat;
+          const lng = isGwaliorOrNear ? data.longitude : GWALIOR_CENTER.lng;
+          const areaName = isGwaliorOrNear ? (data.city || "Gwalior") : "Gwalior Center";
+          onLocationSuccess(lat, lng, 2000, `Network IP (${areaName})`);
+          return;
+        }
+      }
+    } catch (e) {
+      // IP fallback also failed or blocked
+    }
+
+    resetBtnState();
+    showToast("⚠️ Device location permission not granted. Select your Gwalior area below or click on the map.");
+    const manualBox = el("manualLocation");
+    if (manualBox) manualBox.hidden = false;
+    if (locStatus) {
+      locStatus.innerHTML = `⚠️ Location not shared. <a href="javascript:void(0)" onclick="el('manualLocation').hidden=false" style="color:#0284c7; text-decoration:underline; font-weight:700;">Select your Gwalior neighborhood</a> or click on map.`;
+    }
+  };
 
   if (!navigator.geolocation) {
-    isLocating = false;
-    showToast("Geolocation is not supported by your browser. Using Gwalior Center.");
-    handleLocationFound(GWALIOR_CENTER.lat, GWALIOR_CENTER.lng, false);
+    onLocationFailure("Geolocation not supported by browser");
     return;
   }
 
+  // Generous timeout (12s) to allow user to see and click browser permission popup
   let resolved = false;
+
   const fallbackTimer = setTimeout(() => {
     if (!resolved) {
-      resolved = true;
-      isLocating = false;
-      handleLocationFound(GWALIOR_CENTER.lat, GWALIOR_CENTER.lng, false);
+      // Try fast low-accuracy query if high accuracy didn't return
+      navigator.geolocation.getCurrentPosition(
+        pos => {
+          if (resolved) return;
+          resolved = true;
+          clearTimeout(fallbackTimer);
+          onLocationSuccess(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy || 120, "Network / Wi-Fi");
+        },
+        () => {
+          if (!resolved) {
+            resolved = true;
+            onLocationFailure("GPS lock timed out");
+          }
+        },
+        { enableHighAccuracy: false, timeout: 6000, maximumAge: 300000 }
+      );
     }
-  }, 3200);
+  }, 5000);
 
   navigator.geolocation.getCurrentPosition(
     pos => {
       if (resolved) return;
       resolved = true;
       clearTimeout(fallbackTimer);
-      isLocating = false;
-      handleLocationFound(pos.coords.latitude, pos.coords.longitude, true);
+      onLocationSuccess(pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy || 20, "Live Device GPS");
     },
     err => {
-      if (resolved) return;
-      resolved = true;
-      clearTimeout(fallbackTimer);
-      isLocating = false;
-      console.warn("GPS lookup fallback:", err);
-      handleLocationFound(GWALIOR_CENTER.lat, GWALIOR_CENTER.lng, false);
+      if (err.code === 1) { // PERMISSION_DENIED
+        if (resolved) return;
+        resolved = true;
+        clearTimeout(fallbackTimer);
+        onLocationFailure("Permission denied by user");
+      }
+      // For code 2 (POSITION_UNAVAILABLE) or code 3 (TIMEOUT), let the fallback attempt complete
     },
-    { enableHighAccuracy: true, timeout: 3000, maximumAge: 30000 }
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
   );
 }
 
-function handleLocationFound(lat, lng, accurate) {
-  userPoint = { lat, lng, accurate };
+function handleLocationFound(lat, lng, accurate = true, sourceName = "GPS", accuracyRadius = 50, flyToUser = true) {
+  userPoint = { lat, lng, accurate, source: sourceName };
 
-  // Find nearest hospital instantly using distance calculation
+  if (typeof localStorage !== "undefined") {
+    try {
+      localStorage.setItem("arogyaUserPoint", JSON.stringify(userPoint));
+    } catch(e) {}
+  }
+
+  // Recalculate distance for all hospitals from new live location
   let nearestHosp = null;
   let minDistance = Infinity;
 
@@ -3379,35 +3484,74 @@ function handleLocationFound(lat, lng, accurate) {
 
   const locStatus = el("locationStatus");
   if (locStatus) {
+    const badgeColor = accurate ? "#10b981" : "#f59e0b";
+    const coordStr = `${lat.toFixed(4)}° N, ${lng.toFixed(4)}° E`;
     if (nearestHosp) {
-      locStatus.innerHTML = `📍 Location: <strong>${lat.toFixed(4)}, ${lng.toFixed(4)}</strong> &bull; Nearest: <strong style="color:#0d9488;">${esc(nearestHosp.name)}</strong> (${minDistance.toFixed(1)} km)`;
+      locStatus.innerHTML = `<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:${badgeColor}; box-shadow:0 0 6px ${badgeColor}; margin-right:6px;"></span> 📍 <strong>Your Live Location:</strong> ${coordStr} <span style="color:#64748b; font-size:0.8rem;">(${sourceName})</span> &bull; Nearest: <strong style="color:#0d9488;">${esc(nearestHosp.name)}</strong> (${minDistance.toFixed(1)} km, ~${etaMinutes(minDistance)} mins)`;
     } else {
-      locStatus.textContent = `Location: ${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+      locStatus.innerHTML = `<span style="display:inline-block; width:9px; height:9px; border-radius:50%; background:${badgeColor}; box-shadow:0 0 6px ${badgeColor}; margin-right:6px;"></span> 📍 <strong>Your Live Location:</strong> ${coordStr} <span style="color:#64748b;">(${sourceName})</span>`;
     }
   }
 
   const sortSelect = el("sortBy");
   if (sortSelect) sortSelect.value = "distance";
 
-  updateUserMarker();
+  updateUserMarker(accuracyRadius);
   filterHospitals();
 
-  if (map && nearestHosp) {
-    const bounds = L.latLngBounds([
-      [userPoint.lat, userPoint.lng],
-      [nearestHosp.lat, nearestHosp.lng]
-    ]);
-    map.fitBounds(bounds, { padding: [50, 50], maxZoom: 15 });
-
+  if (map && flyToUser) {
+    map.flyTo([userPoint.lat, userPoint.lng], 15, { animate: true, duration: 1.2 });
     setTimeout(() => {
-      if (mapMarkers[nearestHosp.id]) {
-        mapMarkers[nearestHosp.id].openPopup();
-      }
-    }, 600);
-
-    const etaMins = Math.max(2, Math.round(minDistance * 2.5));
-    showToast(`🏆 Nearest Hospital: ${nearestHosp.name} (${minDistance.toFixed(1)} km, ~${etaMins} mins away)!`);
+      if (userMarker) userMarker.openPopup();
+    }, 1300);
   }
+}
+
+function setManualArea(areaName, lat, lng) {
+  handleLocationFound(lat, lng, true, areaName, 60, true);
+  const hint = el("searchLocalityHint");
+  if (hint) hint.style.display = "none";
+  if (el("manualLocation")) el("manualLocation").hidden = true;
+  showToast(`📍 Location set to ${areaName}! Nearest hospitals recalculated.`);
+}
+
+function searchManualLocality() {
+  const query = (el("manualInput")?.value || "").toLowerCase().trim();
+  if (!query) {
+    showToast("Please enter an area name in Gwalior (e.g. Thatipur, Morar, City Centre).");
+    return;
+  }
+
+  // 1. Check Gwalior localities dictionary
+  const match = GWALIOR_LOCALITIES.find(l => 
+    l.keywords.some(k => query.includes(k) || k.includes(query)) ||
+    l.name.toLowerCase().includes(query)
+  );
+
+  if (match) {
+    setManualArea(match.name, match.lat, match.lng);
+    return;
+  }
+
+  // 2. Query Nominatim OpenStreetMap Geocoder for Gwalior
+  showToast(`Searching location for "${query}" in Gwalior…`);
+  fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ", Gwalior, Madhya Pradesh, India")}`, {
+    signal: AbortSignal.timeout(6000)
+  })
+    .then(r => r.json())
+    .then(data => {
+      if (data && data.length > 0) {
+        const item = data[0];
+        const lat = parseFloat(item.lat);
+        const lng = parseFloat(item.lon);
+        setManualArea(query.toUpperCase(), lat, lng);
+      } else {
+        showToast(`Could not find "${query}". Please choose from the Gwalior Area dropdown or click on the map.`);
+      }
+    })
+    .catch(() => {
+      showToast(`Could not geocode "${query}". Please click on the map to set your pin.`);
+    });
 }
 
 function renderSkeletons() {
@@ -3453,6 +3597,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   allBloodBanks = bb;
   allAmbulances = amb;
 
+  // Restore saved location if available in localStorage
+  if (typeof localStorage !== "undefined") {
+    try {
+      const savedUserPoint = JSON.parse(localStorage.getItem("arogyaUserPoint"));
+      if (savedUserPoint && typeof savedUserPoint.lat === "number" && typeof savedUserPoint.lng === "number") {
+        userPoint = savedUserPoint;
+      }
+    } catch(e) {}
+  }
+
   const presetSel = el("presetArea");
   if (presetSel) {
     PRESET_AREAS.forEach(([name, lat, lng]) => {
@@ -3464,10 +3618,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     presetSel.addEventListener("change", () => {
       if (!presetSel.value) return;
       const [lat, lng] = presetSel.value.split(",").map(Number);
-      userPoint = { lat, lng, accurate: true };
-      updateUserMarker();
-      el("locationStatus").textContent = `Selected Area: ${presetSel.options[presetSel.selectedIndex].text}`;
-      filterHospitals();
+      const selName = presetSel.options[presetSel.selectedIndex].text;
+      setManualArea(selName, lat, lng);
     });
   }
 
@@ -3513,11 +3665,45 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   el("resetBtn")?.addEventListener("click", resetAllFilters);
-  el("locateBtn")?.addEventListener("click", useMyLocation);
+  el("locateBtn")?.addEventListener("click", () => useMyLocation(true));
 
   el("manualBtn")?.addEventListener("click", () => {
     const box = el("manualLocation");
     if (box) box.hidden = !box.hidden;
+  });
+
+  el("manualSearchBtn")?.addEventListener("click", searchManualLocality);
+  el("manualInput")?.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      searchManualLocality();
+    }
+  });
+
+  // Smart locality detection when typing in main search bar
+  el("searchInput")?.addEventListener("input", (e) => {
+    const val = (e.target.value || "").toLowerCase().trim();
+    const hint = el("searchLocalityHint");
+    if (!hint) return;
+    if (val.length >= 3) {
+      const match = GWALIOR_LOCALITIES.find(l => 
+        l.keywords.some(k => val.includes(k) || k.includes(val)) ||
+        l.name.toLowerCase().includes(val)
+      );
+      if (match) {
+        hint.style.display = "flex";
+        hint.innerHTML = `
+          <span style="font-size:0.84rem; color:#065f46; font-weight:600;">
+            📍 Set your location to <strong>${esc(match.name)}</strong> to calculate driving distance from here?
+          </span>
+          <button type="button" class="btn btn-sm btn-primary" onclick="setManualArea('${esc(match.name)}', ${match.lat}, ${match.lng})">
+            Set Location Pin
+          </button>
+        `;
+        return;
+      }
+    }
+    hint.style.display = "none";
   });
 
   el("pickMapBtn")?.addEventListener("click", () => {
